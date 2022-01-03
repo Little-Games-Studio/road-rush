@@ -18,6 +18,8 @@ const config = {
     }
 };
 
+const max_players = 2;
+
 const players = {};
 
 function preload() {
@@ -36,32 +38,40 @@ function create() {
 
     io.on('connection', function (socket) {
 
-        console.log('a player connected', socket.id);
-        // create a new player and add it to our players object
-        players[socket.id] = {
-            id: socket.id,
-            rotation: 0,
-            x: self.player_positions[self.players_physics_group.getLength()].x,
-            y: self.player_positions[self.players_physics_group.getLength()].y
-        };
-        // add player to server
-        addPlayer(self, players[socket.id]);
-        // send the players object to the new player
-        socket.emit('currentPlayers', players);
-        // update all other players of the new player
-        socket.broadcast.emit('newPlayer', players[socket.id]);
+        console.log('a player connected', socket.id, Object.keys(players).length);
 
-        socket.on('disconnect', function () {
+        // if no. max players is not reached yet create a new player and add it to our players object
+        if (Object.keys(players).length < max_players) {
 
-            console.log('player disconnected', socket.id);
+            players[socket.id] = {
+                id: socket.id,
+                rotation: 0,
+                x: self.player_positions[self.players_physics_group.getLength()].x,
+                y: self.player_positions[self.players_physics_group.getLength()].y
+            };
 
-            // remove player from server
-            removePlayer(self, socket.id);
-            // remove this player from our players object
-            delete players[socket.id];
-            // emit a message to all players to remove this player
-            io.emit('disconnect-player', socket.id);
-        });
+            // add player to server
+            addPlayer(self, players[socket.id]);
+            // send the players object to the new player
+            socket.emit('currentPlayers', players);
+            // update all other players of the new player
+            socket.broadcast.emit('newPlayer', players[socket.id]);
+
+            socket.on('disconnect', function () {
+
+                console.log('player disconnected', socket.id);
+
+                // remove player from server
+                removePlayer(self, socket.id);
+                // remove this player from our players object
+                delete players[socket.id];
+                // emit a message to all players to remove this player
+                io.emit('disconnect-player', socket.id);
+            });
+        }
+        else {
+            console.log('max players reached - player', socket.id, 'not connected');
+        }
     });
 }
 
