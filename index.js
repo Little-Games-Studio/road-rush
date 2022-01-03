@@ -16,7 +16,7 @@ const io = require('socket.io')(server);
 
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', function (req: any, res: { sendFile: (arg0: string) => void; }) {
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
@@ -28,7 +28,7 @@ function setupAuthoritativePhaser() {
         resources: "usable",
         // So requestAnimatinFrame events fire
         pretendToBeVisual: true
-    }).then((dom: { window: { URL: { createObjectURL: (blob: any) => any; revokeObjectURL: (objectURL: any) => void; }; gameLoaded: () => void; io: any; }; }) => {
+    }).then((dom) => {
 
         dom.window.URL.createObjectURL = (blob) => {
             if (blob) {
@@ -44,7 +44,7 @@ function setupAuthoritativePhaser() {
             });
         };
         dom.window.io = io;
-    }).catch((error: { message: any; }) => {
+    }).catch((error) => {
         console.log(error.message);
     });
 }

@@ -1,5 +1,5 @@
 {
-  "name": "defenders",
+  "name": "road-rush",
   "version": "0.1.0",
   "description": "A sample Node.js app using Express 4",
   "engines": {
@@ -7,7 +7,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "ts-node-dev ./index.ts",
+    "start": "node index.js",
     "start-dev": "node --inspect index.js",
     "test": "node test.js"
   },
