@@ -25,6 +25,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export class GameScene extends Phaser.Scene {
 
     public player: Player;
+
     private socket: any;
     private players: any;
 
@@ -45,9 +46,16 @@ export class GameScene extends Phaser.Scene {
         this.socket = io();
         this.players = this.add.group();
 
-        this.socket.on('currentPlayers', (players) => {
+        console.log("socket:", this.socket.id)
 
-            console.log("socket:", this.socket.id)
+        this.socket.on('connectionRefused', () => {
+
+            console.log('connection-refused - player disconnected');
+            // Manually disconnects the socket. The socket will not try to reconnect.
+            this.socket.disconnect();
+        });
+
+        this.socket.on('currentPlayers', (players) => {
 
             this.players.getChildren().forEach((player) => {
                 console.log("currentPlayers 1 - player:", player.id);
@@ -82,11 +90,7 @@ export class GameScene extends Phaser.Scene {
             });
         });
 
-        this.socket.on('max-players-reached', () => {
-            console.log('max players reached - player NOT connected');
-        });
-
-        this.socket.on('disconnect-player', (playerId) => {
+        this.socket.on('disconnectPlayer', (playerId) => {
 
             console.log('disconnect-player - player disconnected', playerId);
 
