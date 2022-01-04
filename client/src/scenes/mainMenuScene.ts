@@ -1,7 +1,6 @@
 import * as Phaser from 'phaser';
 import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
 
-import { GameScene } from './gameScene';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: true,
@@ -10,10 +9,15 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 };
 
 export class MainMenuScene extends Phaser.Scene {
-
-    private gameScene: GameScene;
     private createSessionButton: any;
     private joinSessionButton: any;
+
+    private keyW: Phaser.Input.Keyboard.Key;
+    private keyA: Phaser.Input.Keyboard.Key;
+    private keyS: Phaser.Input.Keyboard.Key;
+    private keyD: Phaser.Input.Keyboard.Key;
+
+    private inputText: any;
 
     constructor() {
         super(sceneConfig);
@@ -21,7 +25,11 @@ export class MainMenuScene extends Phaser.Scene {
 
     create(data: { is_paused: any; }): void {
 
-        this.gameScene = this.game.scene.getScene('GameScene') as GameScene;
+        // KEYS
+        this.keyW = this.input.keyboard.addKey('W');
+        this.keyA = this.input.keyboard.addKey('A');
+        this.keyS = this.input.keyboard.addKey('S');
+        this.keyD = this.input.keyboard.addKey('D');
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -31,9 +39,8 @@ export class MainMenuScene extends Phaser.Scene {
         this.add.text(screenCenterX, menuTopPosition, 'Main Menu', { font: '48px Calibri' }).setOrigin(0.5);
 
         // https://rexrainbow.github.io/phaser3-rex-notes/docs/site/inputtext/#style
-        var inputText = new InputText(this, screenCenterX, menuTopPosition + 65, 400, 50, { // x, y, width, height
+        this.inputText = new InputText(this, screenCenterX, menuTopPosition + 65, 400, 50, { // x, y, width, height
             type: 'text',
-            text: this.gameScene.username,
             fontSize: '28px',
             maxLength: 10,
             minLength: 3,
@@ -45,7 +52,7 @@ export class MainMenuScene extends Phaser.Scene {
         })
             .setOrigin(0.5)
             .on('textchange', (inputText) => {
-                this.gameScene.username = inputText.text;
+                this.registry.set('username', inputText.text);
                 console.log(inputText.text)
                 if (inputText.text.length > 2) {
                     this.activateButtons();
@@ -71,48 +78,39 @@ export class MainMenuScene extends Phaser.Scene {
                 console.log('On dblclick');
             })
 
-        this.add.existing(inputText);
+        this.add.existing(this.inputText);
 
-        /* if (this.gameScene.username && this.gameScene.username.length > 2) {
-            this.activateButtons();
-        } */
+        this.registry.events.on('changedata', this.updateInputText, this);
 
         this.input.keyboard.on('keydown', (event) => {
-            if (inputText.text.length < 10) {
+            if (this.inputText.text.length < 10) {
                 if (event.key == 'a') {
-                    inputText.text += event.key;
-                    this.gameScene.username = inputText.text;
-                    if (inputText.text.length > 2) {
+                    this.inputText.text += event.key;
+                    this.registry.set('username', this.inputText.text);
+                    if (this.inputText.text.length > 2) {
                         this.activateButtons();
                     }
                 } else if (event.key == 's') {
-                    inputText.text += event.key;
-                    this.gameScene.username = inputText.text;
-                    if (inputText.text.length > 2) {
+                    this.inputText.text += event.key;
+                    this.registry.set('username', this.inputText.text);
+                    if (this.inputText.text.length > 2) {
                         this.activateButtons();
                     }
                 } else if (event.key == 'd') {
-                    inputText.text += event.key;
-                    this.gameScene.username = inputText.text;
-                    if (inputText.text.length > 2) {
+                    this.inputText.text += event.key;
+                    this.registry.set('username', this.inputText.text);
+                    if (this.inputText.text.length > 2) {
                         this.activateButtons();
                     }
                 } else if (event.key == 'w') {
-                    inputText.text += event.key;
-                    this.gameScene.username = inputText.text;
-                    if (inputText.text.length > 2) {
+                    this.inputText.text += event.key;
+                    this.registry.set('username', this.inputText.text);
+                    if (this.inputText.text.length > 2) {
                         this.activateButtons();
                     }
                 }
             }
         });
-
-        /* this.startButton = this.add.text(screenCenterX, screenCenterY + 25, data.is_paused ? "RESUME" : "START", { font: '28px Arial' }).setOrigin(0.5);
-        this.startButton.setInteractive(); */
-
-        /* this.startButton.once('pointerup', () => {
-            this.resumeGame();
-        }); */
 
         this.createSessionButton = this.add.text(screenCenterX, screenCenterY + 25, "CREATE SESSION",
             {
@@ -136,11 +134,12 @@ export class MainMenuScene extends Phaser.Scene {
             this.scene.start('JoinSessionScene');
         });
 
-        inputText.setFocus();
+        this.inputText.setFocus();
+    }
 
-        /* this.input.keyboard.once('keydown-ENTER', () => {
-            this.resumeGame();
-        }, this); */
+    updateInputText(parent, key, data)
+    {
+        this.inputText.text = data;
     }
 
     activateButtons() {

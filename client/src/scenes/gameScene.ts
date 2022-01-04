@@ -9,7 +9,7 @@ import * as race_car from './../assets/images/race_car.png'
 import { Player } from '../gameObjects/player/player';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
-    active: true,
+    active: false,
     visible: true,
     key: 'GameScene',
     physics: {
@@ -32,12 +32,9 @@ export class GameScene extends Phaser.Scene {
     public username: string;
     private players: any;
 
-    private music: any;
+    private session_text: any;
 
-    private keyW: Phaser.Input.Keyboard.Key;
-    private keyA: Phaser.Input.Keyboard.Key;
-    private keyS: Phaser.Input.Keyboard.Key;
-    private keyD: Phaser.Input.Keyboard.Key;
+    private music: any;
 
     constructor() {
         super(sceneConfig);
@@ -51,20 +48,12 @@ export class GameScene extends Phaser.Scene {
 
     create(): void {
 
-        // KEYS
-        this.keyW = this.input.keyboard.addKey('W');
-        this.keyA = this.input.keyboard.addKey('A');
-        this.keyS = this.input.keyboard.addKey('S');
-        this.keyD = this.input.keyboard.addKey('D');
-
         this.socket = io();
         this.players = this.add.group();
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
 
-        if (this.session) {
-            this.add.text(screenCenterX, 50, 'Session: ' + this.session, { font: '24px Calibri' }).setOrigin(0.5);
-        }
+        this.session_text = this.add.text(screenCenterX, 50, '', { font: '24px Calibri' }).setOrigin(0.5);
 
         this.socket.on("connect", () => {
             console.log("socket:", this.socket.id)
@@ -136,11 +125,11 @@ export class GameScene extends Phaser.Scene {
         //this.music.loop = true;
 
 
-        /* this.input.keyboard.on('keydown-ESC', () => {
+        this.input.keyboard.on('keydown-ESC', () => {
             this.scene.pause('GameScene');
-            this.scene.launch('MainMenuScene', { is_paused: true });
+            this.scene.launch('LeaveSessionScene');
         }, this);
-
+/*
         this.events.on('pause', () => {
            // this.music.pause();
             console.log('Game paused');
@@ -149,10 +138,10 @@ export class GameScene extends Phaser.Scene {
         this.events.on('resume', () => {
          //   this.music.resume();
             console.log('Game resumed');
-        })
+        })*/
 
-       // this.music.pause();
-        this.scene.pause('GameScene'); */
+        this.music.pause();
+        this.scene.pause('GameScene');
     }
 
     update(time, delta): void {
@@ -160,8 +149,12 @@ export class GameScene extends Phaser.Scene {
         //this.player.update(time, delta);
     }
 
-    displayPlayer(playerInfo, playerType) {
+    setSession(session) {
+        this.session = session;
+        this.session_text.text = 'Session: ' + this.session;
+    }
 
+    displayPlayer(playerInfo, playerType) {
         const player = new Player(this, playerInfo, playerType);
         this.players.add(player);
     }

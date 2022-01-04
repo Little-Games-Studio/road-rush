@@ -2,12 +2,31 @@ import './index.css'
 
 import Phaser from 'phaser'
 
+import { GameScene } from './scenes/gameScene'
 import { MainMenuScene } from './scenes/mainMenuScene'
 import { CreateSessionScene } from './scenes/createSessionScene'
 import { JoinSessionScene } from './scenes/JoinSessionScene'
-import { GameScene } from './scenes/gameScene'
+import { LeaveSessionScene } from './scenes/LeaveSessionScene'
 import { HUDScene } from './scenes/hudScene'
 import { GameOverScene } from './scenes/gameOverScene'
+
+import { io } from "socket.io-client";
+
+class SessionManager extends Phaser.Plugins.BasePlugin {
+
+    constructor(pluginManager) {
+        super(pluginManager);
+    }
+
+    start() {
+        this.socket = io();
+
+        this.socket.on("connect", () => {
+            console.log("socket:", this.socket.id)
+        });
+
+    }
+}
 
 var config = {
     parent: "game",
@@ -26,11 +45,24 @@ var config = {
         disableWebAudio: true
     },
     scene: [
-        GameScene,
         MainMenuScene,
         CreateSessionScene,
-        JoinSessionScene
-    ]
+        JoinSessionScene,
+        LeaveSessionScene,
+        GameScene
+    ],
+    plugins: {
+        global: [
+            {
+                key: 'SessionManager',
+                plugin: SessionManager,
+                start: true,
+                mapping: 'sessionManager'     // member name in each scene instance
+            }
+        ]
+    }
 };
 
-var game = new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+

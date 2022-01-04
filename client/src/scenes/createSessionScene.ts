@@ -1,8 +1,4 @@
 import * as Phaser from 'phaser';
-import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
-
-import { io } from "socket.io-client";
-import { GameScene } from './gameScene';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
@@ -12,17 +8,16 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class CreateSessionScene extends Phaser.Scene {
 
-    private gameScene: GameScene;
     private createButton: any;
     private backButton: any;
+
+    private sessionManager: any;
 
     constructor() {
         super(sceneConfig);
     }
 
     create(data: { is_paused: any; }): void {
-
-        this.gameScene = this.game.scene.getScene('GameScene') as GameScene;
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -33,7 +28,9 @@ export class CreateSessionScene extends Phaser.Scene {
 
         this.add.text(screenCenterX, menuTopPosition + 55, 'Share this session ID with your friends: ', { font: '24px Calibri' }).setOrigin(0.5);
 
-        this.add.text(screenCenterX, menuTopPosition + 85, this.gameScene.socket.id, { font: '24px Calibri' }).setOrigin(0.5);
+        this.sessionManager = this.plugins.get('SessionManager');
+
+        this.add.text(screenCenterX, menuTopPosition + 85, this.sessionManager.socket.id, { font: '24px Calibri' }).setOrigin(0.5);
         
         this.createButton = this.add.text(screenCenterX, menuTopPosition + 135, "JOIN", { font: '28px Calibri' }).setOrigin(0.5);
         this.createButton.setInteractive();
@@ -51,8 +48,8 @@ export class CreateSessionScene extends Phaser.Scene {
     }
 
     handleJoinClick() {
-        this.gameScene.session = this.gameScene.socket.id;
-        this.gameScene.socket.emit('join-session', this.gameScene.socket.id);
-        this.scene.start('GameScene');
+        /* this.gameScene.setSession(this.gameScene.socket.id);
+        this.gameScene.socket.emit('join-session', this.gameScene.socket.id); */
+        this.scene.sleep();
     }
 }
