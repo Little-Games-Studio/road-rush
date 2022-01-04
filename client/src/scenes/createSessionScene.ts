@@ -35,14 +35,14 @@ export class CreateSessionScene extends Phaser.Scene {
 
         this.add.text(screenCenterX, menuTopPosition + 85, this.gameScene.socket.id, { font: '24px Calibri' }).setOrigin(0.5);
         
-        this.createButton = this.add.text(screenCenterX, menuTopPosition + 195, "JOIN", { font: '28px Calibri' }).setOrigin(0.5);
+        this.createButton = this.add.text(screenCenterX, menuTopPosition + 135, "JOIN", { font: '28px Calibri' }).setOrigin(0.5);
         this.createButton.setInteractive();
 
         this.createButton.once('pointerup', () => {
             this.handleJoinClick();
         });
 
-        this.backButton = this.add.text(screenCenterX, menuTopPosition + 245, "BACK", { font: '28px Calibri' }).setOrigin(0.5);
+        this.backButton = this.add.text(screenCenterX, menuTopPosition + 185, "BACK", { font: '28px Calibri' }).setOrigin(0.5);
         this.backButton.setInteractive();
 
         this.backButton.once('pointerup', () => {
@@ -51,6 +51,8 @@ export class CreateSessionScene extends Phaser.Scene {
     }
 
     handleJoinClick() {
+        this.gameScene.session = this.gameScene.socket.id;
+        this.gameScene.socket.emit('join-session', this.gameScene.socket.id);
         this.scene.start('GameScene');
     }
 }

@@ -42,8 +42,13 @@ function create() {
 
         console.log('player', socket.id, 'is trying to connect...', Object.keys(players).length);
 
+        socket.on('join-session', function (room) {
+            socket.join(room);
+            io.to(room).emit('message', 'player ' + socket.id + ' joined session ' + room);
+        });
+
         // if no. max players is not reached yet create a new player and add it to our players object
-        if (Object.keys(players).length < max_players) {
+        /* if (Object.keys(players).length < max_players) {
 
             socket.join("game room");
 
@@ -79,7 +84,7 @@ function create() {
             console.log('max players reached - player', socket.id, 'not connected');
 
             io.to(socket.id).emit('connectionRefused');
-        }
+        } */
     });
 }
 

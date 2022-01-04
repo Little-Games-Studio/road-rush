@@ -28,10 +28,16 @@ export class GameScene extends Phaser.Scene {
     public player: Player;
 
     public socket: any;
+    public session: any;
     public username: string;
     private players: any;
 
     private music: any;
+
+    private keyW: Phaser.Input.Keyboard.Key;
+    private keyA: Phaser.Input.Keyboard.Key;
+    private keyS: Phaser.Input.Keyboard.Key;
+    private keyD: Phaser.Input.Keyboard.Key;
 
     constructor() {
         super(sceneConfig);
@@ -45,11 +51,27 @@ export class GameScene extends Phaser.Scene {
 
     create(): void {
 
+        // KEYS
+        this.keyW = this.input.keyboard.addKey('W');
+        this.keyA = this.input.keyboard.addKey('A');
+        this.keyS = this.input.keyboard.addKey('S');
+        this.keyD = this.input.keyboard.addKey('D');
+
         this.socket = io();
         this.players = this.add.group();
 
+        const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+
+        if (this.session) {
+            this.add.text(screenCenterX, 50, 'Session: ' + this.session, { font: '24px Calibri' }).setOrigin(0.5);
+        }
+
         this.socket.on("connect", () => {
             console.log("socket:", this.socket.id)
+        });
+
+        this.socket.on("message", (message) => {
+            console.log("server message:", message)
         });
 
         this.socket.on('connectionRefused', () => {

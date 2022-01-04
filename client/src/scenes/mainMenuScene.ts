@@ -38,7 +38,10 @@ export class MainMenuScene extends Phaser.Scene {
             maxLength: 10,
             minLength: 3,
             placeholder: 'Enter your name',
-            align: 'center'
+            align: 'center',
+            border: 5,
+            /* backgroundColor: '#fff', */
+            borderColor: '#797D81',
         })
             .setOrigin(0.5)
             .on('textchange', (inputText) => {
