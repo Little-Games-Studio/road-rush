@@ -51,11 +51,12 @@ export class MainMenuScene extends Phaser.Scene {
                     this.deactivateButtons();
                 }
             })
-            .on('focus', function (inputText) {
+            .on('focus', (inputText) => {
                 console.log('On focus');
-                /* if (inputText.text.length > 2) {
+                console.log(inputText.text)
+                if (inputText.text.length > 2) {
                     this.activateButtons();
-                } */
+                }
             })
             .on('blur', function (inputText) {
                 console.log('On blur');
@@ -69,22 +70,36 @@ export class MainMenuScene extends Phaser.Scene {
 
         this.add.existing(inputText);
 
-        inputText.setFocus();
+        /* if (this.gameScene.username && this.gameScene.username.length > 2) {
+            this.activateButtons();
+        } */
 
         this.input.keyboard.on('keydown', (event) => {
             if (inputText.text.length < 10) {
                 if (event.key == 'a') {
                     inputText.text += event.key;
+                    this.gameScene.username = inputText.text;
+                    if (inputText.text.length > 2) {
+                        this.activateButtons();
+                    }
                 } else if (event.key == 's') {
                     inputText.text += event.key;
+                    this.gameScene.username = inputText.text;
+                    if (inputText.text.length > 2) {
+                        this.activateButtons();
+                    }
                 } else if (event.key == 'd') {
                     inputText.text += event.key;
+                    this.gameScene.username = inputText.text;
+                    if (inputText.text.length > 2) {
+                        this.activateButtons();
+                    }
                 } else if (event.key == 'w') {
                     inputText.text += event.key;
-                }
-
-                if (inputText.text.length > 2) {
-                    this.activateButtons();
+                    this.gameScene.username = inputText.text;
+                    if (inputText.text.length > 2) {
+                        this.activateButtons();
+                    }
                 }
             }
         });
@@ -117,6 +132,8 @@ export class MainMenuScene extends Phaser.Scene {
         this.joinSessionButton.once('pointerup', () => {
             this.scene.start('JoinSessionScene');
         });
+
+        inputText.setFocus();
 
         /* this.input.keyboard.once('keydown-ENTER', () => {
             this.resumeGame();
