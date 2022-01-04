@@ -8,7 +8,9 @@ export class Player extends Phaser.GameObjects.GameObject {
     private text: Phaser.GameObjects.Text;
 
     private keyW: Phaser.Input.Keyboard.Key;
+    private keyA: Phaser.Input.Keyboard.Key;
     private keyS: Phaser.Input.Keyboard.Key;
+    private keyD: Phaser.Input.Keyboard.Key;
 
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
@@ -20,7 +22,9 @@ export class Player extends Phaser.GameObjects.GameObject {
 
         // KEYS
         this.keyW = this.scene.input.keyboard.addKey('W');
+        this.keyA = this.scene.input.keyboard.addKey('A');
         this.keyS = this.scene.input.keyboard.addKey('S');
+        this.keyD = this.scene.input.keyboard.addKey('D');
 
         this.cursors = this.scene.input.keyboard.createCursorKeys();
 

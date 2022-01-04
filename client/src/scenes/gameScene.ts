@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+
 import { io } from "socket.io-client";
 
 import * as background_img from './../assets/images/background/road.png'
@@ -26,7 +27,8 @@ export class GameScene extends Phaser.Scene {
 
     public player: Player;
 
-    private socket: any;
+    public socket: any;
+    public username: string;
     private players: any;
 
     private music: any;
@@ -46,7 +48,9 @@ export class GameScene extends Phaser.Scene {
         this.socket = io();
         this.players = this.add.group();
 
-        console.log("socket:", this.socket.id)
+        this.socket.on("connect", () => {
+            console.log("socket:", this.socket.id)
+        });
 
         this.socket.on('connectionRefused', () => {
 

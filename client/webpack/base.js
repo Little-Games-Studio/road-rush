@@ -11,7 +11,7 @@ module.exports = {
         extensions: [".ts", ".tsx", ".js"]
     },
     output: {
-        path: path.resolve("./../server/public"),
+        path: path.resolve("./../public"),
         filename: "index_bundle.js"
     },
     module: {
