@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "sourceMap": true,
+    },
+    "include": [
+        "src/gameObjects",
+        "src/scenes"
+    ],
+    "exclude": [
+        "node_modules"
+    ],
+    "files": [
+        "./index.d.ts"
+    ]
+}
