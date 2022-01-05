@@ -9,6 +9,12 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class CreateSessionScene extends Phaser.Scene {
 
+    private onePlayerButton: any;
+    private twoPlayersButton: any;
+    private threePlayersButton: any;
+    private fourPlayersButton: any;
+    private fivePlayersButton: any;
+
     private createButton: any;
     private backButton: any;
 
@@ -52,21 +58,41 @@ export class CreateSessionScene extends Phaser.Scene {
 
         this.add.text(screenCenterX, playersTitlePosition, 'Players', { font: '24px Calibri' }).setOrigin(0.5);
 
-        var onePlayerButton = this.add.text(screenCenterX - 150, playersButtonsPosition, "1", buttonStyle).setOrigin(0.5);
-        onePlayerButton.setBackgroundColor('#fff');
-        onePlayerButton.setInteractive();
+        this.onePlayerButton = this.add.text(screenCenterX - 150, playersButtonsPosition, "1", buttonStyle).setOrigin(0.5);
+        this.onePlayerButton.setBackgroundColor('#fff');
+        this.onePlayerButton.setInteractive();
+
+        this.onePlayerButton.on('pointerup', () => {
+            this.handlePlayerButtonClick(1);
+        });
         
-        var twoPlayersButton = this.add.text(screenCenterX - 75, playersButtonsPosition, "2", buttonStyle).setOrigin(0.5);
-        twoPlayersButton.setInteractive();
+        this.twoPlayersButton = this.add.text(screenCenterX - 75, playersButtonsPosition, "2", buttonStyle).setOrigin(0.5);
+        this.twoPlayersButton.setInteractive();
 
-        var threePlayersButton = this.add.text(screenCenterX, playersButtonsPosition, "3", buttonStyle).setOrigin(0.5);
-        threePlayersButton.setInteractive();
+        this.twoPlayersButton.on('pointerup', () => {
+            this.handlePlayerButtonClick(2);
+        });
 
-        var fourPlayersButton = this.add.text(screenCenterX + 75, playersButtonsPosition, "4", buttonStyle).setOrigin(0.5);
-        fourPlayersButton.setInteractive();
+        this.threePlayersButton = this.add.text(screenCenterX, playersButtonsPosition, "3", buttonStyle).setOrigin(0.5);
+        this.threePlayersButton.setInteractive();
 
-        var fivePlayersButton = this.add.text(screenCenterX + 150, playersButtonsPosition, "5", buttonStyle).setOrigin(0.5);
-        fivePlayersButton.setInteractive();
+        this.threePlayersButton.on('pointerup', () => {
+            this.handlePlayerButtonClick(3);
+        });
+
+        this.fourPlayersButton = this.add.text(screenCenterX + 75, playersButtonsPosition, "4", buttonStyle).setOrigin(0.5);
+        this.fourPlayersButton.setInteractive();
+
+        this.fourPlayersButton.on('pointerup', () => {
+            this.handlePlayerButtonClick(4);
+        });
+
+        this.fivePlayersButton = this.add.text(screenCenterX + 150, playersButtonsPosition, "5", buttonStyle).setOrigin(0.5);
+        this.fivePlayersButton.setInteractive();
+
+        this.fivePlayersButton.on('pointerup', () => {
+            this.handlePlayerButtonClick(5);
+        });
 
         this.add.text(screenCenterX, sessionTitlePosition, 'Share this session ID with your friends:', { font: '24px Calibri' }).setOrigin(0.5);
 
@@ -97,6 +123,43 @@ export class CreateSessionScene extends Phaser.Scene {
         this.backButton.once('pointerup', () => {
             this.scene.start('MainMenuScene');
         });
+    }
+
+    handlePlayerButtonClick(players) {
+        if (players == 1) {
+            this.onePlayerButton.setBackgroundColor('#fff');
+        }
+        else {
+            this.onePlayerButton.setBackgroundColor('#797D81');
+        }
+
+        if (players == 2) {
+            this.twoPlayersButton.setBackgroundColor('#fff');
+        }
+        else {
+            this.twoPlayersButton.setBackgroundColor('#797D81');
+        }
+
+        if (players == 3) {
+            this.threePlayersButton.setBackgroundColor('#fff');
+        }
+        else {
+            this.threePlayersButton.setBackgroundColor('#797D81');
+        }
+
+        if (players == 4) {
+            this.fourPlayersButton.setBackgroundColor('#fff');
+        }
+        else {
+            this.fourPlayersButton.setBackgroundColor('#797D81');
+        }
+
+        if (players == 5) {
+            this.fivePlayersButton.setBackgroundColor('#fff');
+        }
+        else {
+            this.fivePlayersButton.setBackgroundColor('#797D81');
+        }
     }
 
     handleJoinClick() {
