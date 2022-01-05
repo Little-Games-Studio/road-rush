@@ -18,7 +18,7 @@
     },
     "main": "src/index.js",
     "scripts": {
-        "build": "webpack --config webpack/prod.js ",
+        "build": "webpack --config webpack/prod.js",
         "start": "webpack-dev-server --config webpack/base.js --open"
     },
     "devDependencies": {

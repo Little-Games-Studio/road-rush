@@ -10,23 +10,7 @@ import { LeaveSessionScene } from './scenes/LeaveSessionScene'
 import { HUDScene } from './scenes/hudScene'
 import { GameOverScene } from './scenes/gameOverScene'
 
-import { io } from "socket.io-client";
-
-class SessionManager extends Phaser.Plugins.BasePlugin {
-
-    constructor(pluginManager) {
-        super(pluginManager);
-    }
-
-    start() {
-        this.socket = io();
-
-        this.socket.on("connect", () => {
-            console.log("socket:", this.socket.id)
-        });
-
-    }
-}
+import { GameManager } from './plugins/GameManager'
 
 var config = {
     parent: "game",
@@ -54,10 +38,10 @@ var config = {
     plugins: {
         global: [
             {
-                key: 'SessionManager',
-                plugin: SessionManager,
+                key: 'GameManager',
+                plugin: GameManager,
                 start: true,
-                mapping: 'sessionManager'     // member name in each scene instance
+                mapping: 'gameManager'
             }
         ]
     }

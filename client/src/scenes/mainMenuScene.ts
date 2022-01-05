@@ -9,13 +9,16 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 };
 
 export class MainMenuScene extends Phaser.Scene {
+
+    private gameManager: any;
+
     private createSessionButton: any;
     private joinSessionButton: any;
 
-    private keyW: Phaser.Input.Keyboard.Key;
+    /* private keyW: Phaser.Input.Keyboard.Key;
     private keyA: Phaser.Input.Keyboard.Key;
     private keyS: Phaser.Input.Keyboard.Key;
-    private keyD: Phaser.Input.Keyboard.Key;
+    private keyD: Phaser.Input.Keyboard.Key; */
 
     private inputText: any;
 
@@ -26,10 +29,12 @@ export class MainMenuScene extends Phaser.Scene {
     create(data: { is_paused: any; }): void {
 
         // KEYS
-        this.keyW = this.input.keyboard.addKey('W');
+        /* this.keyW = this.input.keyboard.addKey('W');
         this.keyA = this.input.keyboard.addKey('A');
         this.keyS = this.input.keyboard.addKey('S');
-        this.keyD = this.input.keyboard.addKey('D');
+        this.keyD = this.input.keyboard.addKey('D'); */
+
+        this.gameManager = this.plugins.get('GameManager');
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -41,6 +46,7 @@ export class MainMenuScene extends Phaser.Scene {
         // https://rexrainbow.github.io/phaser3-rex-notes/docs/site/inputtext/#style
         this.inputText = new InputText(this, screenCenterX, menuTopPosition + 65, 400, 50, { // x, y, width, height
             type: 'text',
+            text: this.gameManager.username,
             fontSize: '28px',
             maxLength: 10,
             minLength: 3,
@@ -52,8 +58,9 @@ export class MainMenuScene extends Phaser.Scene {
         })
             .setOrigin(0.5)
             .on('textchange', (inputText) => {
-                this.registry.set('username', inputText.text);
-                console.log(inputText.text)
+
+                this.gameManager.username = inputText.text;
+
                 if (inputText.text.length > 2) {
                     this.activateButtons();
                 }
@@ -62,27 +69,24 @@ export class MainMenuScene extends Phaser.Scene {
                 }
             })
             .on('focus', (inputText) => {
-                console.log('On focus');
-                console.log(inputText.text)
+                /* console.log('On focus'); */
                 if (inputText.text.length > 2) {
                     this.activateButtons();
                 }
             })
             .on('blur', function (inputText) {
-                console.log('On blur');
+                /* console.log('On blur'); */
             })
             .on('click', function (inputText) {
-                console.log('On click');
+                /* console.log('On click'); */
             })
             .on('dblclick', function (inputText) {
-                console.log('On dblclick');
+                /* console.log('On dblclick'); */
             })
 
         this.add.existing(this.inputText);
 
-        this.registry.events.on('changedata', this.updateInputText, this);
-
-        this.input.keyboard.on('keydown', (event) => {
+        /* this.input.keyboard.on('keydown', (event) => {
             if (this.inputText.text.length < 10) {
                 if (event.key == 'a') {
                     this.inputText.text += event.key;
@@ -110,7 +114,7 @@ export class MainMenuScene extends Phaser.Scene {
                     }
                 }
             }
-        });
+        }); */
 
         this.createSessionButton = this.add.text(screenCenterX, screenCenterY + 25, "CREATE SESSION",
             {
@@ -135,11 +139,6 @@ export class MainMenuScene extends Phaser.Scene {
         });
 
         this.inputText.setFocus();
-    }
-
-    updateInputText(parent, key, data)
-    {
-        this.inputText.text = data;
     }
 
     activateButtons() {
