@@ -1,53 +1,65 @@
 {
-  "name": "road-rush",
-  "version": "0.1.0",
-  "description": "A sample Node.js app using Express 4",
-  "engines": {
-    "node": "14.x"
-  },
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "build": "webpack --config webpack/webpack.config.prod.js",
-    "test": "node test.js"
-  },
-  "dependencies": {
-    "canvas": "^2.8.0",
-    "datauri": "^4.1.0",
-    "ejs": "^3.1.5",
-    "express": "^4.15.2",
-    "jsdom": "^19.0.0",
-    "phaser": "^3.55.2",
-    "socket.io": "^4.4.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.16.7",
-    "@types/express": "^4.17.13",
-    "@types/node": "^17.0.7",
-    "babel-loader": "^8.2.3",
-    "clean-webpack-plugin": "^4.0.0",
-    "css-loader": "^6.5.1",
-    "file-loader": "^6.2.0",
-    "got": "^11.3.0",
-    "html-webpack-plugin": "^5.5.0",
-    "mini-css-extract-plugin": "^2.4.5",
-    "style-loader": "^3.3.1",
-    "tape": "^4.7.0",
-    "ts-loader": "^9.2.6",
-    "ts-node-dev": "^1.1.8",
-    "typescript": "^4.5.4",
-    "webpack": "^5.65.0",
-    "webpack-cli": "^4.9.1",
-    "webpack-merge": "^5.8.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
-  },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
-  "license": "MIT"
+    "name": "road-rush",
+    "productName": "Road Rush",
+    "version": "0.1.0",
+    "description": "Road Rush is an HTML5 indie game build with Phaser.io.",
+    "author": {
+        "name": "Melanie Mende",
+        "email": "melanie.mende@little-games-studio.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Little-Games-Studio/road-rush"
+    },
+    "license": "MIT",
+    "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+    "bugs": {
+        "url": "https://github.com/Little-Games-Studio/road-rush/issues"
+    },
+    "engines": {
+        "node": "14.x"
+    },
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "build": "webpack --config webpack/webpack.config.prod.js",
+        "test": "node test.js"
+    },
+    "dependencies": {
+        "canvas": "^2.8.0",
+        "datauri": "^4.1.0",
+        "ejs": "^3.1.5",
+        "express": "^4.15.2",
+        "jsdom": "^19.0.0",
+        "phaser": "^3.55.2",
+        "phaser3-rex-plugins": "^1.1.65",
+        "socket.io": "^4.4.0"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.16.7",
+        "@types/express": "^4.17.13",
+        "@types/node": "^17.0.7",
+        "babel-loader": "^8.2.3",
+        "clean-webpack-plugin": "^4.0.0",
+        "css-loader": "^6.5.1",
+        "file-loader": "^6.2.0",
+        "got": "^11.3.0",
+        "html-webpack-plugin": "^5.5.0",
+        "mini-css-extract-plugin": "^2.4.5",
+        "style-loader": "^3.3.1",
+        "tape": "^4.7.0",
+        "ts-loader": "^9.2.6",
+        "ts-node-dev": "^1.1.8",
+        "typescript": "^4.5.4",
+        "webpack": "^5.65.0",
+        "webpack-cli": "^4.9.1",
+        "webpack-merge": "^5.8.0"
+    },
+    "keywords": [
+        "node",
+        "heroku",
+        "express",
+        "socket.io",
+        "phaser"
+    ]
 }
