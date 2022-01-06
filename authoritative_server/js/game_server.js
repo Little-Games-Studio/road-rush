@@ -18,8 +18,6 @@ const config = {
     }
 };
 
-const max_players = 2;
-
 const sessions = {};
 const players = {};
 
@@ -41,20 +39,50 @@ function create() {
 
     io.on('connection', function (socket) {
 
-        console.log('player', socket.id, ' connected', Object.keys(players).length);
+        players[socket.id] = {
+            id: socket.id
+        };
+
+        console.log('player', socket.id, 'connected to server, current players: ', Object.keys(players).length);
+
+        socket.on('create-session', function (data) {
+
+            if (!sessions[socket.id]) {
+
+                var session = socket.id;
+                sessions[session] = { max_players: data.number_of_players, players: [] };
+
+                // create a new player and add it to our session object
+
+                socket.join('session-' + session);
+
+                players[socket.id].session = session;
+                sessions[session].players.push(socket.id)
+
+                console.log('player', socket.id, 'created a session');
+                io.in('session-' + session).emit('message', 'session created');
+            }
+            else {
+                console.log("Session already exists!")
+            }
+            
+            console.log(sessions)
+        })
 
         socket.on('join-session', function (session) {
 
-            if (!sessions[session]) {
-                sessions[session] = [ socket.id ];
-            }
-            else {
-                sessions.push(socket.id);
-            }
+            if (sessions[session] && sessions[session].players.length < sessions[session].max_players) {
 
-            console.log(sessions)
+                socket.join('session-' + session);
 
-            // if no. of max players is not reached yet, create a new player and add it to our players object
+                players[socket.id].session = session;
+                sessions[session].players.push(socket.id)
+
+                console.log('player', socket.id, 'joined session', session);
+                io.in('session-' + session).emit('message', 'player ' + socket.id + ' joined session ' + session);
+            }      
+
+            // if no. of max players is not reached yet, create a new player and add it to our session object
             /* if (Object.keys(players).length < max_players) {
             
                 socket.join(session);
@@ -62,12 +90,7 @@ function create() {
     
                 console.log('player', socket.id, 'connected');
     
-                players[socket.id] = {
-                    id: socket.id,
-                    rotation: 0,
-                    x: self.player_positions[0].x,
-                    y: self.player_positions[0].y
-                };
+                
     
                 self.player_positions.shift();
     
@@ -75,24 +98,57 @@ function create() {
                 addPlayer(self, players[socket.id]);
                 
                 io.to("game room").emit('currentPlayers', players);
-    
-                socket.on('disconnect', function () {
-    
-                    console.log('player disconnected', socket.id);
-    
-                    // remove player from server
-                    removePlayer(self, socket.id);
-                    // remove this player from our players object
-                    delete players[socket.id];
-                    
-                    io.to("game room").emit('currentPlayers', players);
-                });
             }
             else {
                 console.log('max players reached - player', socket.id, 'not connected');
     
                 io.to(socket.id).emit('connectionRefused');
             } */
+        });
+
+        socket.on('leave-session', function () {
+
+            var session = players[socket.id].session;
+
+            socket.leave('session-' + session);
+
+            if (sessions[session]) {
+                var index = sessions[session].players.indexOf(socket.id);
+                sessions[session].players.splice(index, 1);
+
+                if (sessions[session].players.length == 0) {
+                    delete sessions[session]
+                }
+            }
+
+            console.log(sessions)
+            io.to('session-' + session).emit('message', 'player ' + socket.id + ' disconnected');
+        });
+
+        socket.on('disconnect', function () {
+
+            console.log('player', socket.id, 'disconnected from server, current players: ', Object.keys(players).length);
+
+            var session = players[socket.id].session;
+
+            if (session) {
+                var index = sessions[session].players.indexOf(socket.id);
+                sessions[session].players.splice(index, 1);
+
+                if (sessions[session].players.length == 0) {
+                    delete sessions[session]
+                }
+
+                console.log(sessions)
+                io.to(session).emit('message', 'player', socket.id, 'disconnected');
+            }
+            
+            // remove player from physics group
+            // removePlayer(self, socket.id);
+            // remove this player from our players object
+            delete players[socket.id];
+
+            io.to(session).emit('currentPlayers', players);
         });
     });
 }

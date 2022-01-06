@@ -15,11 +15,6 @@ export class MainMenuScene extends Phaser.Scene {
     private createSessionButton: any;
     private joinSessionButton: any;
 
-    /* private keyW: Phaser.Input.Keyboard.Key;
-    private keyA: Phaser.Input.Keyboard.Key;
-    private keyS: Phaser.Input.Keyboard.Key;
-    private keyD: Phaser.Input.Keyboard.Key; */
-
     private inputText: any;
 
     constructor() {
@@ -27,12 +22,6 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     create(data: { is_paused: any; }): void {
-
-        // KEYS
-        /* this.keyW = this.input.keyboard.addKey('W');
-        this.keyA = this.input.keyboard.addKey('A');
-        this.keyS = this.input.keyboard.addKey('S');
-        this.keyD = this.input.keyboard.addKey('D'); */
 
         this.gameManager = this.plugins.get('GameManager');
 
@@ -53,7 +42,6 @@ export class MainMenuScene extends Phaser.Scene {
             placeholder: 'Enter your name',
             align: 'center',
             border: 5,
-            /* backgroundColor: '#fff', */
             borderColor: '#797D81',
         })
             .setOrigin(0.5)
@@ -69,52 +57,12 @@ export class MainMenuScene extends Phaser.Scene {
                 }
             })
             .on('focus', (inputText) => {
-                /* console.log('On focus'); */
                 if (inputText.text.length > 2) {
                     this.activateButtons();
                 }
             })
-            .on('blur', function (inputText) {
-                /* console.log('On blur'); */
-            })
-            .on('click', function (inputText) {
-                /* console.log('On click'); */
-            })
-            .on('dblclick', function (inputText) {
-                /* console.log('On dblclick'); */
-            })
 
         this.add.existing(this.inputText);
-
-        /* this.input.keyboard.on('keydown', (event) => {
-            if (this.inputText.text.length < 10) {
-                if (event.key == 'a') {
-                    this.inputText.text += event.key;
-                    this.registry.set('username', this.inputText.text);
-                    if (this.inputText.text.length > 2) {
-                        this.activateButtons();
-                    }
-                } else if (event.key == 's') {
-                    this.inputText.text += event.key;
-                    this.registry.set('username', this.inputText.text);
-                    if (this.inputText.text.length > 2) {
-                        this.activateButtons();
-                    }
-                } else if (event.key == 'd') {
-                    this.inputText.text += event.key;
-                    this.registry.set('username', this.inputText.text);
-                    if (this.inputText.text.length > 2) {
-                        this.activateButtons();
-                    }
-                } else if (event.key == 'w') {
-                    this.inputText.text += event.key;
-                    this.registry.set('username', this.inputText.text);
-                    if (this.inputText.text.length > 2) {
-                        this.activateButtons();
-                    }
-                }
-            }
-        }); */
 
         this.createSessionButton = this.add.text(screenCenterX, screenCenterY + 25, "CREATE SESSION",
             {

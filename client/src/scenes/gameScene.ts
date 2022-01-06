@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
-
-import { io } from "socket.io-client";
+import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
 
 import * as background_img from './../assets/images/background/road.png'
 //import * as racing_mp3 from './../assets/audio/racing.mp3'
@@ -27,12 +26,8 @@ export class GameScene extends Phaser.Scene {
 
     public player: Player;
 
-    public socket: any;
-    public session: any;
-    public username: string;
+    private gameManager: any;
     private players: any;
-
-    private session_text: any;
 
     private music: any;
 
@@ -48,29 +43,32 @@ export class GameScene extends Phaser.Scene {
 
     create(): void {
 
-        this.socket = io();
+        this.gameManager = this.plugins.get('GameManager');
+
         this.players = this.add.group();
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
 
-        this.session_text = this.add.text(screenCenterX, 50, '', { font: '24px Calibri' }).setOrigin(0.5);
+        this.add.text(30, 30, 'Session:', { font: '22px Calibri' });
 
-        this.socket.on("connect", () => {
-            console.log("socket:", this.socket.id)
+        var inputText = new InputText(this, 260, 42, 300, 30, { // x, y, width, height
+            type: 'text',
+            text: this.gameManager.session,
+            fontSize: '22px',
+            fontFamily: 'Calibri',
+            readOnly: true,
+            align: 'left',
         });
+        this.add.existing(inputText);
 
-        this.socket.on("message", (message) => {
-            console.log("server message:", message)
-        });
-
-        this.socket.on('connectionRefused', () => {
+        /* this.socket.on('connectionRefused', () => {
 
             console.log('connection-refused - player disconnected');
             // Manually disconnects the socket. The socket will not try to reconnect.
             this.socket.disconnect();
-        });
+        }); */
 
-        this.socket.on('currentPlayers', (players) => {
+        /* this.socket.on('currentPlayers', (players) => {
 
             this.players.getChildren().forEach((player) => {
                 console.log("currentPlayers 1 - player:", player.id);
@@ -95,17 +93,17 @@ export class GameScene extends Phaser.Scene {
             this.players.getChildren().forEach((player) => {
                 console.log("currentPlayers 4 - player:", player.id);
             });
-        });
+        }); */
 
-        this.socket.on('newPlayer', (playerInfo) => {
+        /* this.socket.on('newPlayer', (playerInfo) => {
             console.log('newPlayer - player connected', playerInfo.id);
             this.displayPlayer(playerInfo, 'enemy');
             this.players.getChildren().forEach((player) => {
                 console.log("newPlayer - currentPlayers - player:", player.id);
             });
-        });
+        }); */
 
-        this.socket.on('disconnectPlayer', (playerId) => {
+        /* this.socket.on('disconnectPlayer', (playerId) => {
 
             console.log('disconnect-player - player disconnected', playerId);
 
@@ -119,7 +117,7 @@ export class GameScene extends Phaser.Scene {
             this.players.getChildren().forEach((player) => {
                 console.log("disconnect-player - current player:", player.id);
             });
-        });
+        }); */
 
         //this.music = this.sound.add('music');
         //this.music.loop = true;
@@ -140,18 +138,13 @@ export class GameScene extends Phaser.Scene {
             console.log('Game resumed');
         })*/
 
-        this.music.pause();
-        this.scene.pause('GameScene');
+        /* this.music.pause();
+        this.scene.pause('GameScene'); */
     }
 
     update(time, delta): void {
 
         //this.player.update(time, delta);
-    }
-
-    setSession(session) {
-        this.session = session;
-        this.session_text.text = 'Session: ' + this.session;
     }
 
     displayPlayer(playerInfo, playerType) {

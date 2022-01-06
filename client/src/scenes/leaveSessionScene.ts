@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser';
 
-import { io } from "socket.io-client";
 import { GameScene } from './gameScene';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -11,7 +10,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class LeaveSessionScene extends Phaser.Scene {
 
-    private gameScene: GameScene;
+    private gameManager: any;
     private yesButton: any;
     private noButton: any;
 
@@ -21,7 +20,7 @@ export class LeaveSessionScene extends Phaser.Scene {
 
     create(data: { is_paused: any; }): void {
 
-        this.gameScene = this.game.scene.getScene('GameScene') as GameScene;
+        this.gameManager = this.plugins.get('GameManager');
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -46,12 +45,14 @@ export class LeaveSessionScene extends Phaser.Scene {
     }
 
     handleYesClick() {
-        this.gameScene.setSession(null);
-        this.gameScene.socket.emit('leave-session', this.gameScene.session);
-        this.scene.sleep();
+        this.gameManager.socket.emit('leave-session');
+        this.scene.start('MainMenuScene');
+        this.scene.stop('GameScene');
+        this.scene.stop('LeaveSessionScene');
     }
 
     handleNoClick() {
-        this.scene.sleep();
+        this.scene.resume('GameScene');
+        this.scene.stop('LeaveSessionScene');
     }
 }

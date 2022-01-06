@@ -36,11 +36,11 @@ export class CreateSessionScene extends Phaser.Scene {
         const playersTitlePosition = menuTopPosition + 55;
         const playersButtonsPosition = playersTitlePosition + 50;
 
-        const sessionTitlePosition = playersButtonsPosition + 70;
-        const sessionIDPosition = sessionTitlePosition + 50;
-
-        const createButtonPosition = sessionIDPosition + 70;
+        const createButtonPosition = playersButtonsPosition + 70;
         const backButtonPosition = createButtonPosition + 50;
+
+        /* const sessionTitlePosition = playersButtonsPosition + 70;
+        const sessionIDPosition = sessionTitlePosition + 50; */
 
         var buttonStyle = {
             font: '28px Calibri',
@@ -59,8 +59,10 @@ export class CreateSessionScene extends Phaser.Scene {
         this.add.text(screenCenterX, playersTitlePosition, 'Players', { font: '24px Calibri' }).setOrigin(0.5);
 
         this.onePlayerButton = this.add.text(screenCenterX - 150, playersButtonsPosition, "1", buttonStyle).setOrigin(0.5);
-        this.onePlayerButton.setBackgroundColor('#fff');
         this.onePlayerButton.setInteractive();
+
+        if (!this.gameManager.amount_of_players || this.gameManager.amount_of_players == 1)
+            this.onePlayerButton.setBackgroundColor('#fff');
 
         this.onePlayerButton.on('pointerup', () => {
             this.handlePlayerButtonClick(1);
@@ -69,12 +71,18 @@ export class CreateSessionScene extends Phaser.Scene {
         this.twoPlayersButton = this.add.text(screenCenterX - 75, playersButtonsPosition, "2", buttonStyle).setOrigin(0.5);
         this.twoPlayersButton.setInteractive();
 
+        if (this.gameManager.amount_of_players == 2)
+            this.twoPlayersButton.setBackgroundColor('#fff');
+
         this.twoPlayersButton.on('pointerup', () => {
             this.handlePlayerButtonClick(2);
         });
 
         this.threePlayersButton = this.add.text(screenCenterX, playersButtonsPosition, "3", buttonStyle).setOrigin(0.5);
         this.threePlayersButton.setInteractive();
+
+        if (this.gameManager.amount_of_players == 3)
+            this.threePlayersButton.setBackgroundColor('#fff');
 
         this.threePlayersButton.on('pointerup', () => {
             this.handlePlayerButtonClick(3);
@@ -83,6 +91,9 @@ export class CreateSessionScene extends Phaser.Scene {
         this.fourPlayersButton = this.add.text(screenCenterX + 75, playersButtonsPosition, "4", buttonStyle).setOrigin(0.5);
         this.fourPlayersButton.setInteractive();
 
+        if (this.gameManager.amount_of_players == 4)
+            this.fourPlayersButton.setBackgroundColor('#fff');
+
         this.fourPlayersButton.on('pointerup', () => {
             this.handlePlayerButtonClick(4);
         });
@@ -90,11 +101,28 @@ export class CreateSessionScene extends Phaser.Scene {
         this.fivePlayersButton = this.add.text(screenCenterX + 150, playersButtonsPosition, "5", buttonStyle).setOrigin(0.5);
         this.fivePlayersButton.setInteractive();
 
+        if (this.gameManager.amount_of_players == 5)
+            this.fivePlayersButton.setBackgroundColor('#fff');
+
         this.fivePlayersButton.on('pointerup', () => {
             this.handlePlayerButtonClick(5);
         });
+        
+        this.createButton = this.add.text(screenCenterX, createButtonPosition, "CREATE", { font: '28px Calibri' }).setOrigin(0.5);
+        this.createButton.setInteractive();
 
-        this.add.text(screenCenterX, sessionTitlePosition, 'Share this session ID with your friends:', { font: '24px Calibri' }).setOrigin(0.5);
+        this.createButton.once('pointerup', () => {
+            this.handleCreateClick();
+        });
+
+        this.backButton = this.add.text(screenCenterX, backButtonPosition, "BACK", { font: '28px Calibri' }).setOrigin(0.5);
+        this.backButton.setInteractive();
+
+        this.backButton.once('pointerup', () => {
+            this.scene.start('MainMenuScene');
+        });
+
+        /* this.add.text(screenCenterX, sessionTitlePosition, 'Share this session ID with your friends:', { font: '24px Calibri' }).setOrigin(0.5);
 
         var inputText = new InputText(this, screenCenterX, sessionIDPosition, 300, 40, { // x, y, width, height
             type: 'text',
@@ -106,26 +134,13 @@ export class CreateSessionScene extends Phaser.Scene {
             backgroundColor: '#fff',
             align: 'center',
         }).setOrigin(0.5);
-        this.add.existing(inputText);
-
-        /* this.add.text(screenCenterX, sessionIDPosition, this.gameManager.socket.id, { font: '24px Calibri' }).setOrigin(0.5); */
-        
-        this.createButton = this.add.text(screenCenterX, createButtonPosition, "CREATE", { font: '28px Calibri' }).setOrigin(0.5);
-        this.createButton.setInteractive();
-
-        this.createButton.once('pointerup', () => {
-            this.handleJoinClick();
-        });
-
-        this.backButton = this.add.text(screenCenterX, backButtonPosition, "BACK", { font: '28px Calibri' }).setOrigin(0.5);
-        this.backButton.setInteractive();
-
-        this.backButton.once('pointerup', () => {
-            this.scene.start('MainMenuScene');
-        });
+        this.add.existing(inputText); */
     }
 
     handlePlayerButtonClick(players) {
+
+        this.gameManager.amount_of_players = players;
+
         if (players == 1) {
             this.onePlayerButton.setBackgroundColor('#fff');
         }
@@ -162,9 +177,9 @@ export class CreateSessionScene extends Phaser.Scene {
         }
     }
 
-    handleJoinClick() {
-        /* this.gameScene.setSession(this.gameScene.socket.id);
-        this.gameScene.socket.emit('join-session', this.gameScene.socket.id); */
-        this.scene.sleep();
+    handleCreateClick() {
+        this.gameManager.session = this.gameManager.socket.id;
+        this.gameManager.socket.emit('create-session', { number_of_players: this.gameManager.amount_of_players });
+        this.scene.start('GameScene');
     }
 }
