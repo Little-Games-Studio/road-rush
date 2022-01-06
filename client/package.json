@@ -1,21 +1,4 @@
 {
-    "name": "road-rush",
-    "productName": "Road Rush",
-    "version": "1.0.0",
-    "description": "Road Rush is an HTML5 indie game build with Phaser.io.",
-    "author": {
-        "name": "Melanie Mende",
-        "email": "melanie.mende@little-games-studio.com"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/Little-Games-Studio/road-rush"
-    },
-    "license": "MIT",
-    "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
-    "bugs": {
-        "url": "https://github.com/Little-Games-Studio/road-rush/issues"
-    },
     "main": "src/index.js",
     "scripts": {
         "build": "webpack --config webpack/prod.js",
