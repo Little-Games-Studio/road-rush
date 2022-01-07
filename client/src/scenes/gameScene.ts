@@ -59,30 +59,26 @@ export class GameScene extends Phaser.Scene {
             readOnly: true,
             align: 'left',
         });
+
         this.add.existing(inputText);
 
-        /* this.socket.on('connectionRefused', () => {
+        Object.keys(this.gameManager.players).forEach((id) => {
 
-            console.log('connection-refused - player disconnected');
-            // Manually disconnects the socket. The socket will not try to reconnect.
-            this.socket.disconnect();
-        }); */
+            if (this.gameManager.players[id].id === this.gameManager.socket.id) {
+                this.displayPlayer(this.gameManager.players[id], 'self');
+            }
+            else {
+                this.displayPlayer(this.gameManager.players[id], 'enemy');
+            }
+        });
 
-        /* this.socket.on('currentPlayers', (players) => {
-
-            this.players.getChildren().forEach((player) => {
-                console.log("currentPlayers 1 - player:", player.id);
-            });
+        this.gameManager.socket.on('currentPlayers', (players) => {
 
             this.players.clear(true, true)
 
-            this.players.getChildren().forEach((player) => {
-                console.log("currentPlayers 3 - player:", player.id);
-            });
-
             Object.keys(players).forEach((id) => {
                 
-                if (players[id].id === this.socket.id) {
+                if (players[id].id === this.gameManager.socket.id) {
                     this.displayPlayer(players[id], 'self');
                 }
                 else {
@@ -93,7 +89,7 @@ export class GameScene extends Phaser.Scene {
             this.players.getChildren().forEach((player) => {
                 console.log("currentPlayers 4 - player:", player.id);
             });
-        }); */
+        });
 
         /* this.socket.on('newPlayer', (playerInfo) => {
             console.log('newPlayer - player connected', playerInfo.id);

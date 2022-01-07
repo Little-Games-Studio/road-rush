@@ -2,8 +2,8 @@ const config = {
     type: Phaser.HEADLESS,
     parent: 'phaser-example',
     autoFocus: false,
-    width: 800,
-    height: 600,
+    width: 1560,
+    height: 768,
     physics: {
         default: 'arcade',
         arcade: {
@@ -31,11 +31,9 @@ function create() {
     this.players_physics_group = this.physics.add.group();
 
     const positions = [
-        { x: this.cameras.main.centerX - 200, y: this.cameras.main.height / 2 + 80 },
-        { x: this.cameras.main.centerX + 900, y: this.cameras.main.height / 2 + 80 }
+        { x: this.cameras.main.worldView.x + this.cameras.main.width / 2 - 200, y: this.cameras.main.height / 2 + 80 },
+        { x: this.cameras.main.worldView.x + this.cameras.main.width / 2 + 200, y: this.cameras.main.height / 2 + 80 }
     ]
-
-    this.player_positions = positions;
 
     io.on('connection', function (socket) {
 
@@ -50,23 +48,26 @@ function create() {
             if (!sessions[socket.id]) {
 
                 var session = socket.id;
-                sessions[session] = { max_players: data.number_of_players, players: [] };
+                sessions[session] = { max_players: data.number_of_players, players: [], positions: positions };
+                
+                players[socket.id].position = sessions[session].positions.shift();
 
-                // create a new player and add it to our session object
+                addPlayer(self, players[socket.id]);
 
                 socket.join('session-' + session);
 
                 players[socket.id].session = session;
-                sessions[session].players.push(socket.id)
+                sessions[session].players.push(players[socket.id])
 
                 console.log('player', socket.id, 'created a session');
                 io.in('session-' + session).emit('message', 'session created');
+                io.in('session-' + session).emit('currentPlayers', sessions[session].players);
             }
             else {
                 console.log("Session already exists!")
             }
             
-            console.log(sessions)
+            console.log('current sessions:', sessions)
         })
 
         socket.on('join-session', function (session) {
@@ -76,34 +77,16 @@ function create() {
                 socket.join('session-' + session);
 
                 players[socket.id].session = session;
-                sessions[session].players.push(socket.id)
+                sessions[session].players.push(players[socket.id])
+
+                players[socket.id].position = sessions[session].positions.shift();
+
+                addPlayer(self, players[socket.id]);
 
                 console.log('player', socket.id, 'joined session', session);
                 io.in('session-' + session).emit('message', 'player ' + socket.id + ' joined session ' + session);
-            }      
-
-            // if no. of max players is not reached yet, create a new player and add it to our session object
-            /* if (Object.keys(players).length < max_players) {
-            
-                socket.join(session);
-                io.to(session).emit('message', 'player ' + socket.id + ' joined session ' + session);
-    
-                console.log('player', socket.id, 'connected');
-    
-                
-    
-                self.player_positions.shift();
-    
-                // add player to server
-                addPlayer(self, players[socket.id]);
-                
-                io.to("game room").emit('currentPlayers', players);
+                io.in('session-' + session).emit('currentPlayers', sessions[session].players);
             }
-            else {
-                console.log('max players reached - player', socket.id, 'not connected');
-    
-                io.to(socket.id).emit('connectionRefused');
-            } */
         });
 
         socket.on('leave-session', function () {
@@ -111,6 +94,8 @@ function create() {
             var session = players[socket.id].session;
 
             socket.leave('session-' + session);
+
+            sessions[session].positions.push({ x: players[socket.id].position.x, y: players[socket.id].position.y });
 
             if (sessions[session]) {
                 var index = sessions[session].players.indexOf(socket.id);
@@ -121,8 +106,11 @@ function create() {
                 }
             }
 
-            console.log(sessions)
+            removePlayerFromPhysicsGroup(self, socket.id);
+            delete players[socket.id];
+
             io.to('session-' + session).emit('message', 'player ' + socket.id + ' disconnected');
+            io.to('session-' + session).emit('currentPlayers', players);
         });
 
         socket.on('disconnect', function () {
@@ -139,16 +127,14 @@ function create() {
                     delete sessions[session]
                 }
 
-                console.log(sessions)
-                io.to(session).emit('message', 'player', socket.id, 'disconnected');
+                io.to('session-' + session).emit('message', 'player ' + socket.id + ' disconnected');
             }
             
-            // remove player from physics group
-            // removePlayer(self, socket.id);
-            // remove this player from our players object
+            removePlayerFromPhysicsGroup(self, socket.id);
             delete players[socket.id];
 
-            io.to(session).emit('currentPlayers', players);
+            io.to('session-' + session).emit('message', 'player ' + socket.id + ' disconnected');
+            io.to('session-' + session).emit('currentPlayers', players);
         });
     });
 }
@@ -161,10 +147,9 @@ function addPlayer(self, playerInfo) {
     self.players_physics_group.add(player);
 }
 
-function removePlayer(self, id) {
+function removePlayerFromPhysicsGroup(self, id) {
     self.players_physics_group.getChildren().forEach((player) => {
         if (id === player.id) {
-            self.player_positions.push({ x: player.x, y: player.y });
             player.destroy();
         }
     });
