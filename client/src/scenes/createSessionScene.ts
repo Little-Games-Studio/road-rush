@@ -39,9 +39,6 @@ export class CreateSessionScene extends Phaser.Scene {
         const createButtonPosition = playersButtonsPosition + 70;
         const backButtonPosition = createButtonPosition + 50;
 
-        /* const sessionTitlePosition = playersButtonsPosition + 70;
-        const sessionIDPosition = sessionTitlePosition + 50; */
-
         var buttonStyle = {
             font: '28px Calibri',
             color: '#000',
@@ -121,20 +118,6 @@ export class CreateSessionScene extends Phaser.Scene {
         this.backButton.once('pointerup', () => {
             this.scene.start('MainMenuScene');
         });
-
-        /* this.add.text(screenCenterX, sessionTitlePosition, 'Share this session ID with your friends:', { font: '24px Calibri' }).setOrigin(0.5);
-
-        var inputText = new InputText(this, screenCenterX, sessionIDPosition, 300, 40, { // x, y, width, height
-            type: 'text',
-            text: this.gameManager.socket.id,
-            fontSize: '24px',
-            fontFamily: 'Calibri',
-            readOnly: true,
-            color: '#000',
-            backgroundColor: '#fff',
-            align: 'center',
-        }).setOrigin(0.5);
-        this.add.existing(inputText); */
     }
 
     handlePlayerButtonClick(players) {
@@ -179,6 +162,7 @@ export class CreateSessionScene extends Phaser.Scene {
 
     handleCreateClick() {
         this.gameManager.session = this.gameManager.socket.id;
+        localStorage.setItem('session', this.gameManager.socket.id);
         this.gameManager.socket.emit('create-session', { number_of_players: this.gameManager.amount_of_players });
         this.scene.start('GameScene');
     }

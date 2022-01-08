@@ -48,9 +48,10 @@ function create() {
             if (!sessions[socket.id]) {
 
                 var session = socket.id;
-                sessions[session] = { max_players: data.number_of_players, players: [], positions: positions };
+                sessions[session] = { max_players: data.number_of_players, players: [], positions: [...positions] };
                 
                 players[socket.id].position = sessions[session].positions.shift();
+                console.log(positions)
 
                 addPlayer(self, players[socket.id]);
 
@@ -83,59 +84,30 @@ function create() {
 
                 addPlayer(self, players[socket.id]);
 
-                console.log('player', socket.id, 'joined session', session);
-                io.in('session-' + session).emit('message', 'player ' + socket.id + ' joined session ' + session);
+                console.log('player', socket.id, 'joined session', session, 'as', players[socket.id].username);
+                io.in('session-' + session).emit('message', 'player ' + players[socket.id].username + ' joined session ' + session);
                 io.in('session-' + session).emit('currentPlayers', sessions[session].players);
             }
         });
 
         socket.on('leave-session', function () {
-
-            var session = players[socket.id].session;
-
-            socket.leave('session-' + session);
-
-            sessions[session].positions.push({ x: players[socket.id].position.x, y: players[socket.id].position.y });
-
-            if (sessions[session]) {
-                var index = sessions[session].players.indexOf(socket.id);
-                sessions[session].players.splice(index, 1);
-
-                if (sessions[session].players.length == 0) {
-                    delete sessions[session]
-                }
-            }
-
+            removePlayerFromSession(self, socket, 'player ' + socket.id + ' left the session');
             removePlayerFromPhysicsGroup(self, socket.id);
-            delete players[socket.id];
-
-            io.to('session-' + session).emit('message', 'player ' + socket.id + ' disconnected');
-            io.to('session-' + session).emit('currentPlayers', players);
         });
 
         socket.on('disconnect', function () {
-
-            console.log('player', socket.id, 'disconnected from server, current players: ', Object.keys(players).length);
-
-            var session = players[socket.id].session;
-
-            if (session) {
-                var index = sessions[session].players.indexOf(socket.id);
-                sessions[session].players.splice(index, 1);
-
-                if (sessions[session].players.length == 0) {
-                    delete sessions[session]
-                }
-
-                io.to('session-' + session).emit('message', 'player ' + socket.id + ' disconnected');
-            }
-            
+            removePlayerFromSession(self, socket, 'player ' + socket.id + ' disconnected')   
             removePlayerFromPhysicsGroup(self, socket.id);
             delete players[socket.id];
 
-            io.to('session-' + session).emit('message', 'player ' + socket.id + ' disconnected');
-            io.to('session-' + session).emit('currentPlayers', players);
+            console.log('player', socket.id, 'disconnected from server, current players: ', Object.keys(players).length);
         });
+
+        socket.on('username', function (username) {
+            players[socket.id].username = username;
+        });
+
+
     });
 }
 
@@ -145,6 +117,32 @@ function addPlayer(self, playerInfo) {
     const player = self.physics.add.image(playerInfo.x, playerInfo.y, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
     player.id = playerInfo.id;
     self.players_physics_group.add(player);
+}
+
+function removePlayerFromSession(self, socket, message) {
+
+    var session = players[socket.id].session;
+
+    if (session) {
+
+        socket.leave('session-' + session);
+
+        var index = sessions[session].players.indexOf(socket.id);
+        sessions[session].players.splice(index, 1);
+
+        if (sessions[session].players.length == 0) {
+            delete sessions[session]
+        }
+        else {
+            sessions[session].positions.push({ x: players[socket.id].position.x, y: players[socket.id].position.y });
+
+            io.to('session-' + session).emit('message', message);
+            io.to('session-' + session).emit('currentPlayers', sessions[session].players);
+        }
+
+        console.log('player', socket.id, 'left session', session)
+        console.log('current sessions:', sessions)
+    }
 }
 
 function removePlayerFromPhysicsGroup(self, id) {

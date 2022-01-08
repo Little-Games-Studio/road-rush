@@ -29,7 +29,10 @@ export class Player extends Phaser.GameObjects.GameObject {
         this.cursors = this.scene.input.keyboard.createCursorKeys();
 
         this.sprite = scene.add.sprite(playerInfo.position.x, playerInfo.position.y, 'player').setOrigin(0.5, 0.5);
-        this.text = scene.add.text(playerInfo.position.x, playerInfo.position.y + 70, playerInfo.id).setOrigin(0.5, 0.5);
+
+        this.text = scene.add.text(playerInfo.position.x, playerInfo.position.y + 70, playerInfo.username, {
+            font: '24px Calibri'
+        }).setOrigin(0.5, 0.5);
 
         if (player_type === 'self') {
             this.sprite.setTint(0x1498C4);

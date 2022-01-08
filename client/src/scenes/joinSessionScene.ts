@@ -33,6 +33,7 @@ export class JoinSessionScene extends Phaser.Scene {
         // https://rexrainbow.github.io/phaser3-rex-notes/docs/site/inputtext/#style
         this.inputText = new InputText(this, screenCenterX, menuTopPosition + 65, 400, 50, { // x, y, width, height
             type: 'text',
+            text: localStorage.getItem('session'),
             fontSize: '28px',
             placeholder: 'Enter session ID',
             align: 'center',
@@ -93,6 +94,7 @@ export class JoinSessionScene extends Phaser.Scene {
 
     handleJoinClick() {
         this.gameManager.session = this.inputText.text;
+        localStorage.setItem('session', this.inputText.text);
         this.gameManager.socket.emit('join-session', this.inputText.text);
         this.scene.start('GameScene');
     }

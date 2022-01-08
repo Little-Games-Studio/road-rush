@@ -1,24 +1,23 @@
 import * as Phaser from 'phaser';
 
-import { GameScene } from './../scenes/gameScene';
-
 import { io } from "socket.io-client";
 
 export class GameManager extends Phaser.Plugins.BasePlugin {
 
-    private myGame: GameScene;
-
     public socket: any;
     public session: any;
-    public username: string = '';
     public amount_of_players: integer;
     public players: any;
+
+    private username: string = '';
 
     constructor(pluginManager) {
         super(pluginManager);
     }
 
     start() {
+
+        this.username = localStorage.getItem('username');
 
         this.socket = io();
 
@@ -35,5 +34,18 @@ export class GameManager extends Phaser.Plugins.BasePlugin {
                 console.log("gameManager - current players:", this.players);
             });
         });
+    }
+
+    sendUsernameToServer() {
+        this.socket.emit("username", this.username);
+    }
+
+    getUsername() {
+        return this.username;
+    }
+
+    setUsername(username) {
+        this.username = username;
+        localStorage.setItem('username', this.username);
     }
 }

@@ -60,6 +60,8 @@ export class GameScene extends Phaser.Scene {
             align: 'left',
         });
 
+        this.add.text(30, 70, this.gameManager.getUsername(), { font: '28px Calibri' });
+
         this.add.existing(inputText);
 
         Object.keys(this.gameManager.players).forEach((id) => {
@@ -84,10 +86,6 @@ export class GameScene extends Phaser.Scene {
                 else {
                     this.displayPlayer(players[id], 'enemy');
                 }
-            });
-
-            this.players.getChildren().forEach((player) => {
-                console.log("currentPlayers 4 - player:", player.id);
             });
         });
 

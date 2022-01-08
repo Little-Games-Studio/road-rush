@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
 
+import { GameManager } from './../plugins/GameManager'
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: true,
@@ -10,7 +11,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class MainMenuScene extends Phaser.Scene {
 
-    private gameManager: any;
+    private gameManager: GameManager;
 
     private createSessionButton: any;
     private joinSessionButton: any;
@@ -23,7 +24,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     create(data: { is_paused: any; }): void {
 
-        this.gameManager = this.plugins.get('GameManager');
+        this.gameManager = this.plugins.get('GameManager') as GameManager;
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
         const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -35,7 +36,7 @@ export class MainMenuScene extends Phaser.Scene {
         // https://rexrainbow.github.io/phaser3-rex-notes/docs/site/inputtext/#style
         this.inputText = new InputText(this, screenCenterX, menuTopPosition + 65, 400, 50, { // x, y, width, height
             type: 'text',
-            text: this.gameManager.username,
+            text: this.gameManager.getUsername(),
             fontSize: '28px',
             maxLength: 10,
             minLength: 3,
@@ -47,7 +48,7 @@ export class MainMenuScene extends Phaser.Scene {
             .setOrigin(0.5)
             .on('textchange', (inputText) => {
 
-                this.gameManager.username = inputText.text;
+                this.gameManager.setUsername(inputText.text);
 
                 if (inputText.text.length > 2) {
                     this.activateButtons();
@@ -72,6 +73,7 @@ export class MainMenuScene extends Phaser.Scene {
             .setOrigin(0.5);
 
         this.createSessionButton.once('pointerup', () => {
+            this.gameManager.sendUsernameToServer()
             this.scene.start('CreateSessionScene');
         });
 
@@ -83,6 +85,7 @@ export class MainMenuScene extends Phaser.Scene {
             .setOrigin(0.5);
 
         this.joinSessionButton.once('pointerup', () => {
+            this.gameManager.sendUsernameToServer()
             this.scene.start('JoinSessionScene');
         });
 
