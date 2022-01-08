@@ -82,7 +82,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     destroy() {
         this.text.destroy();
-        this.destroy();
         super.destroy();
     }
 }
