@@ -6,7 +6,7 @@ export class GameManager extends Phaser.Plugins.BasePlugin {
 
     public socket: any;
     public session: any;
-    public amount_of_players: integer;
+    public amount_of_players: integer = 1;
     public players: any;
 
     private username: string = '';

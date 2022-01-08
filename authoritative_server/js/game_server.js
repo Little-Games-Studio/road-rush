@@ -20,6 +20,13 @@ const config = {
 
 const sessions = {};
 const players = {};
+const colors = [
+    0x1F85DE /* blue*/,
+    0xF73F56 /* red */,
+    0xDFCE46 /* yellow */,
+    0x1FDE68 /* green */,
+    0xAA5FE2 /* purple */
+];
 
 function preload() {
     this.load.image('player', 'assets/player.png');
@@ -29,11 +36,6 @@ function create() {
 
     const self = this;
     this.players_physics_group = this.physics.add.group();
-
-    const positions = [
-        { x: this.cameras.main.worldView.x + this.cameras.main.width / 2 - 200, y: this.cameras.main.height / 2 + 80 },
-        { x: this.cameras.main.worldView.x + this.cameras.main.width / 2 + 200, y: this.cameras.main.height / 2 + 80 }
-    ]
 
     io.on('connection', function (socket) {
 
@@ -48,21 +50,60 @@ function create() {
             if (!sessions[socket.id]) {
 
                 var session = socket.id;
-                sessions[session] = { max_players: data.number_of_players, players: [], positions: [...positions] };
+
+                var session_positions = [];
                 
-                players[socket.id].position = sessions[session].positions.shift();
-                console.log(positions)
+                if (data.number_of_players == 1)
+                    session_positions = [
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: self.cameras.main.height / 2 + 80 }
+                    ]
+                
+                if (data.number_of_players == 2) {
+                    session_positions = [
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: self.cameras.main.height / 2 + 80 }
+                    ]
+                }
 
-                addPlayer(self, players[socket.id]);
+                if (data.number_of_players == 3) {
+                    session_positions = [
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: self.cameras.main.height / 2 + 80 }
+                    ]
+                }
 
-                socket.join('session-' + session);
+                if (data.number_of_players == 4) {
+                    session_positions = [
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 300, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 300, y: self.cameras.main.height / 2 + 80 }
+                    ]
+                }
+                    
+                if (data.number_of_players == 5) {
+                    session_positions = [
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 400, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: self.cameras.main.height / 2 + 80 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 400, y: self.cameras.main.height / 2 + 80 }
+                    ]
+                }
 
-                players[socket.id].session = session;
-                sessions[session].players.push(players[socket.id])
+                sessions[session] = {
+                    max_players: data.number_of_players,
+                    players: [],
+                    positions: session_positions,
+                    colors: [...colors]
+                };
+
+                addPlayerToSession(self, socket, session);
+                addPlayerToPhysicsGroup(self, players[socket.id]);
 
                 console.log('player', socket.id, 'created a session');
                 io.in('session-' + session).emit('message', 'session created');
-                io.in('session-' + session).emit('currentPlayers', sessions[session].players);
             }
             else {
                 console.log("Session already exists!")
@@ -75,18 +116,11 @@ function create() {
 
             if (sessions[session] && sessions[session].players.length < sessions[session].max_players) {
 
-                socket.join('session-' + session);
-
-                players[socket.id].session = session;
-                sessions[session].players.push(players[socket.id])
-
-                players[socket.id].position = sessions[session].positions.shift();
-
-                addPlayer(self, players[socket.id]);
+                addPlayerToSession(self, socket, session);
+                addPlayerToPhysicsGroup(self, players[socket.id]);
 
                 console.log('player', socket.id, 'joined session', session, 'as', players[socket.id].username);
                 io.in('session-' + session).emit('message', 'player ' + players[socket.id].username + ' joined session ' + session);
-                io.in('session-' + session).emit('currentPlayers', sessions[session].players);
             }
         });
 
@@ -113,7 +147,20 @@ function create() {
 
 function update() { }
 
-function addPlayer(self, playerInfo) {
+function addPlayerToSession(self, socket, session) {
+
+    socket.join('session-' + session);
+
+    players[socket.id].session = session;
+    players[socket.id].position = sessions[session].positions.shift();
+    players[socket.id].color = sessions[session].colors.shift();
+
+    sessions[session].players.push(players[socket.id]);
+
+    io.in('session-' + session).emit('currentPlayers', sessions[session].players);
+}
+
+function addPlayerToPhysicsGroup(self, playerInfo) {
     const player = self.physics.add.image(playerInfo.x, playerInfo.y, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
     player.id = playerInfo.id;
     self.players_physics_group.add(player);

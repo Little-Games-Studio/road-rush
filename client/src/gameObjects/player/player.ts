@@ -34,14 +34,8 @@ export class Player extends Phaser.GameObjects.GameObject {
             font: '24px Calibri'
         }).setOrigin(0.5, 0.5);
 
-        if (player_type === 'self') {
-            this.sprite.setTint(0x1498C4);
-            this.text.setTint(0x1498C4);
-        }  
-        else { // red
-            this.sprite.setTint(0xD31616);
-            this.text.setTint(0xD31616);
-        }   
+        this.sprite.setTint(playerInfo.color);
+        this.text.setTint(playerInfo.color);   
     }
 
 

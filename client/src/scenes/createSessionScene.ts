@@ -120,7 +120,7 @@ export class CreateSessionScene extends Phaser.Scene {
         });
     }
 
-    handlePlayerButtonClick(players) {
+    handlePlayerButtonClick(players: integer) {
 
         this.gameManager.amount_of_players = players;
 

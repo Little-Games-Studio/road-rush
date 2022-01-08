@@ -64,7 +64,9 @@ export class JoinSessionScene extends Phaser.Scene {
                 color: '#797D81',
             }).setOrigin(0.5);
         
-        this.joinButton.setInteractive();
+        if (localStorage.getItem('session').length > 0) {
+            this.activateJoinButton()
+        }
 
         this.joinButton.once('pointerup', () => {
             this.handleJoinClick();
