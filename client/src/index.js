@@ -15,7 +15,7 @@ import { GameManager } from './plugins/GameManager'
 var config = {
     parent: "game",
     type: Phaser.AUTO,
-    width: 1560,
+    width: 1600,
     height: 768,
     backgroundColor: '#373839',
     scale: {
@@ -32,8 +32,8 @@ var config = {
         MainMenuScene,
         CreateSessionScene,
         JoinSessionScene,
-        LeaveSessionScene,
-        GameScene
+        GameScene,
+        LeaveSessionScene
     ],
     plugins: {
         global: [

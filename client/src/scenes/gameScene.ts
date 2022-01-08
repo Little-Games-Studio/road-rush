@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
 
-import * as background_img from './../assets/images/background/road.png'
+import * as road from './../assets/images/background/road.png'
 //import * as racing_mp3 from './../assets/audio/racing.mp3'
 import * as race_car from './../assets/images/race_car.png'
 
@@ -29,6 +29,13 @@ export class GameScene extends Phaser.Scene {
     private gameManager: any;
     private players: any;
 
+    public road: Phaser.GameObjects.TileSprite;
+
+    private keyW: Phaser.Input.Keyboard.Key;
+    private keyA: Phaser.Input.Keyboard.Key;
+    private keyS: Phaser.Input.Keyboard.Key;
+    private keyD: Phaser.Input.Keyboard.Key;
+
     private music: any;
 
     constructor() {
@@ -36,9 +43,15 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload(): void {
-        this.load.image('background_img', background_img);
+        this.load.image('road', road);
         this.load.image('player', race_car);
         //this.load.audio('music', [music]);
+
+        // KEYS
+        this.keyW = this.input.keyboard.addKey('W');
+        this.keyA = this.input.keyboard.addKey('A');
+        this.keyS = this.input.keyboard.addKey('S');
+        this.keyD = this.input.keyboard.addKey('D');
     }
 
     create(): void {
@@ -48,6 +61,8 @@ export class GameScene extends Phaser.Scene {
         this.players = this.add.group();
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+
+        this.road = this.add.tileSprite(0, 0, 1600, 768, 'road').setOrigin(0);
 
         this.add.text(30, 30, 'Session:', { font: '22px Calibri' });
 
@@ -89,30 +104,6 @@ export class GameScene extends Phaser.Scene {
             });
         });
 
-        /* this.socket.on('newPlayer', (playerInfo) => {
-            console.log('newPlayer - player connected', playerInfo.id);
-            this.displayPlayer(playerInfo, 'enemy');
-            this.players.getChildren().forEach((player) => {
-                console.log("newPlayer - currentPlayers - player:", player.id);
-            });
-        }); */
-
-        /* this.socket.on('disconnectPlayer', (playerId) => {
-
-            console.log('disconnect-player - player disconnected', playerId);
-
-            this.players.getChildren().forEach((player) => {
-                if (playerId === player.id) {
-                    this.players.remove(player);
-                    player.destroy();
-                }
-            });
-
-            this.players.getChildren().forEach((player) => {
-                console.log("disconnect-player - current player:", player.id);
-            });
-        }); */
-
         //this.music = this.sound.add('music');
         //this.music.loop = true;
 
@@ -138,7 +129,9 @@ export class GameScene extends Phaser.Scene {
 
     update(time, delta): void {
 
-        //this.player.update(time, delta);
+        if (this.keyA?.isDown) {
+            this.gameManager.players[this.gameManager.socket.id].speed
+        }
     }
 
     displayPlayer(playerInfo, playerType) {

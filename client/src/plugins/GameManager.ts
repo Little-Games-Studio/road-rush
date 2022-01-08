@@ -25,7 +25,7 @@ export class GameManager extends Phaser.Plugins.BasePlugin {
 
             console.log("socket:", this.socket.id)
 
-            this.socket.on("message", (message) => {
+            this.socket.on("message", (message: string) => {
                 console.log("server message:", message)
             });
 
