@@ -5,7 +5,7 @@ import * as road from './../assets/images/background/road.png'
 //import * as racing_mp3 from './../assets/audio/racing.mp3'
 import * as race_car from './../assets/images/race_car.png'
 
-import { Player } from '../gameObjects/player/player';
+import { Player } from '../gameObjects/player';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
@@ -27,7 +27,7 @@ export class GameScene extends Phaser.Scene {
     public player: Player;
 
     private gameManager: any;
-    private players: any;
+    private players: Phaser.Physics.Arcade.Group;
 
     public road: Phaser.GameObjects.TileSprite;
 
@@ -44,7 +44,7 @@ export class GameScene extends Phaser.Scene {
 
     preload(): void {
         this.load.image('road', road);
-        this.load.image('player', race_car);
+        this.load.image('race_car', race_car);
         //this.load.audio('music', [music]);
 
         // KEYS
@@ -58,7 +58,7 @@ export class GameScene extends Phaser.Scene {
 
         this.gameManager = this.plugins.get('GameManager');
 
-        this.players = this.add.group();
+        this.players = this.physics.add.group();
 
         const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
 
@@ -123,15 +123,14 @@ export class GameScene extends Phaser.Scene {
             console.log('Game resumed');
         })*/
 
-        /* this.music.pause();
-        this.scene.pause('GameScene'); */
+        /* this.music.pause(); */
     }
 
     update(time, delta): void {
 
-        if (this.keyA?.isDown) {
-            this.gameManager.players[this.gameManager.socket.id].speed
-        }
+        this.players.children.each(player => {
+            player.update();
+        });
     }
 
     displayPlayer(playerInfo, playerType) {
