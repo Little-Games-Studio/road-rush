@@ -35,6 +35,8 @@ function preload() {
 function create() {
 
     const self = this;
+    const y_position = self.cameras.main.worldView.y + self.cameras.main.height - 130;
+
     this.players_physics_group = this.physics.add.group();
 
     io.on('connection', function (socket) {
@@ -55,40 +57,40 @@ function create() {
                 
                 if (data.number_of_players == 1)
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: self.cameras.main.height / 2 + 80 }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position }
                     ]
                 
                 if (data.number_of_players == 2) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: self.cameras.main.height / 2 + 80 }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: y_position }
                     ]
                 }
 
                 if (data.number_of_players == 3) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: self.cameras.main.height / 2 + 80 }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: y_position }
                     ]
                 }
 
                 if (data.number_of_players == 4) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 300, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 300, y: self.cameras.main.height / 2 + 80 }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 300, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 300, y: y_position }
                     ]
                 }
                     
                 if (data.number_of_players == 5) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 400, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: self.cameras.main.height / 2 + 80 },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 400, y: self.cameras.main.height / 2 + 80 }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 400, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: y_position },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 400, y: y_position }
                     ]
                 }
 
