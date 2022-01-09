@@ -30,7 +30,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.cursors = this.scene.input.keyboard.createCursorKeys();
 
-        //this.sprite = scene.add.sprite(playerInfo.position.x, playerInfo.position.y, 'race_car').setOrigin(0.5, 0.5);
+        this.cursors = this.scene.input.keyboard.createCursorKeys();
 
         scene.add.existing(this);
 
@@ -50,26 +50,26 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.setVelocity(0, 0);
             this.setAngularVelocity(0);
 
-            if (this.keyW?.isDown) {
+            if (this.keyW?.isDown || this.cursors.up.isDown) {
 
-                if (this.keyA?.isDown) {
+                if (this.keyA?.isDown || this.cursors.left.isDown) {
                     this.setAngularVelocity(-200);
                 }
 
-                if (this.keyD?.isDown) {
+                if (this.keyD?.isDown || this.cursors.right.isDown) {
                     this.setAngularVelocity(200);
                 }
 
                 this.scene.physics.velocityFromAngle(this.angle - 90, this.speed, this.body.velocity)
             }
 
-            if (this.keyS?.isDown) {
+            if (this.keyS?.isDown || this.cursors.down.isDown) {
 
-                if (this.keyA?.isDown) {
+                if (this.keyA?.isDown || this.cursors.left.isDown) {
                     this.setAngularVelocity(-200);
                 }
 
-                if (this.keyD?.isDown) {
+                if (this.keyD?.isDown || this.cursors.right.isDown) {
                     this.setAngularVelocity(200);
                 }
 
