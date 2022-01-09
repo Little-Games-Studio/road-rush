@@ -192,6 +192,7 @@ export class GameScene extends Phaser.Scene {
             wasMovingBackwards !== this.isMovingBackwards
         ) {
             this.gameManager.socket.emit('playerInput', {
+                delta: delta,
                 isRotatingLeft: this.isRotatingLeft,
                 isRotatingRight: this.isRotatingRight,
                 isMovingForward: this.isMovingForward,

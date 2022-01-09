@@ -221,7 +221,7 @@ function update() {
         players[player_physics.id].position.y = player_physics.body.y;
         players[player_physics.id].rotation = player_physics.body.rotation;
         players[player_physics.id].angle = player_physics.angle;
-        players[player_physics.id].velocity = player_physics.body.velocity;
+        players[player_physics.id].velocity = player_physics.body.velocity * input.delta;
 
         io.emit('playerUpdates', sessions[players[player_physics.id].session].players);
     });
