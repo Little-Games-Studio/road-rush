@@ -23,6 +23,7 @@
     "scripts": {
         "start": "node index.js",
         "build": "webpack --config webpack/webpack.config.prod.js",
+        "build-dev": "webpack --config webpack/webpack.config.base.js",
         "test": "node test.js"
     },
     "dependencies": {
