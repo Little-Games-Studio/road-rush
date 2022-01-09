@@ -13,10 +13,10 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     key: 'GameScene',
     physics: {
         arcade: {
-            debug: true,
+            debug: process.env.ENV == 'development' ? true: false,
         },
         matter: {
-            debug: true,
+            debug: process.env.ENV == 'development' ? true : false,
             gravity: false
         }
     },
