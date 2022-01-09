@@ -82,6 +82,10 @@ export class JoinSessionScene extends Phaser.Scene {
         this.backButton.once('pointerup', () => {
             this.scene.start('MainMenuScene');
         });
+
+        this.gameManager.socket.on('joined-session-success', () => {
+            this.scene.start('GameScene');
+        });
     }
 
     activateJoinButton() {
@@ -98,6 +102,5 @@ export class JoinSessionScene extends Phaser.Scene {
         this.gameManager.session = this.inputText.text;
         localStorage.setItem('session', this.inputText.text);
         this.gameManager.socket.emit('join-session', this.inputText.text);
-        this.scene.start('GameScene');
     }
 }

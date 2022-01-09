@@ -29,10 +29,14 @@ export class GameManager extends Phaser.Plugins.BasePlugin {
                 console.log("server message:", message)
             });
 
+            this.socket.on('error', () => {
+                console.error('ERROR: could not join session');
+            });
+
             this.socket.on('currentPlayers', (players) => {
                 this.players = players;
                 console.log("gameManager - current players:", this.players);
-            });
+            }); 
         });
     }
 

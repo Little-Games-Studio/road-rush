@@ -150,7 +150,13 @@ function create() {
                 addPlayerToPhysicsGroup(self, players[socket.id]);
 
                 console.log('player', socket.id, 'joined session', session, 'as', players[socket.id].username);
+
+                io.to(socket.id).emit('joined-session-success');
+
                 io.in('session-' + session).emit('message', 'player ' + players[socket.id].username + ' joined session ' + session);
+            }
+            else {
+                io.to(socket.id).emit('error', 'could not join session');
             }
         });
 
