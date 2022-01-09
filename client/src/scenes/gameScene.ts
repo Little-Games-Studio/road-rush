@@ -36,6 +36,13 @@ export class GameScene extends Phaser.Scene {
     private keyS: Phaser.Input.Keyboard.Key;
     private keyD: Phaser.Input.Keyboard.Key;
 
+    private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+
+    private isRotatingLeft: boolean = false;
+    private isRotatingRight: boolean = false;
+    private isMovingForward: boolean = false;
+    private isMovingBackwards: boolean = false;
+
     private music: any;
 
     constructor() {
@@ -46,17 +53,19 @@ export class GameScene extends Phaser.Scene {
         this.load.image('road', road);
         this.load.image('race_car', race_car);
         //this.load.audio('music', [music]);
+    }
+
+    create(): void {
+
+        this.gameManager = this.plugins.get('GameManager');
 
         // KEYS
         this.keyW = this.input.keyboard.addKey('W');
         this.keyA = this.input.keyboard.addKey('A');
         this.keyS = this.input.keyboard.addKey('S');
         this.keyD = this.input.keyboard.addKey('D');
-    }
 
-    create(): void {
-
-        this.gameManager = this.plugins.get('GameManager');
+        this.cursors = this.input.keyboard.createCursorKeys();
 
         this.players = this.physics.add.group();
 
@@ -91,6 +100,10 @@ export class GameScene extends Phaser.Scene {
 
         this.gameManager.socket.on('currentPlayers', (players) => {
 
+            /* this.players.children.entries.forEach((player) => {
+                player.destroy();
+            }); */
+
             this.players.clear(true, true)
 
             Object.keys(players).forEach((id) => {
@@ -101,6 +114,17 @@ export class GameScene extends Phaser.Scene {
                 else {
                     this.displayPlayer(players[id], 'enemy');
                 }
+            });
+        });
+
+        this.gameManager.socket.on('playerUpdates', (players) => {
+            Object.keys(players).forEach((id) => {
+                this.players.children.entries.forEach((player: Player) => {
+                    if (players[id].id === player.id) {
+                        player.setPosition(players[id].position.x, players[id].position.y);
+                        player.setAngle(players[id].angle);
+                    }
+                });
             });
         });
 
@@ -127,6 +151,53 @@ export class GameScene extends Phaser.Scene {
     }
 
     update(time, delta): void {
+
+        const wasRotatingLeft = this.isRotatingLeft;
+        const wasRotatingRight = this.isRotatingRight;
+        const wasMovingForward = this.isMovingForward;
+        const wasMovingBackwards = this.isMovingBackwards;
+
+        if (this.keyA?.isDown || this.cursors.left.isDown) {
+            this.isRotatingLeft = true;
+        }
+        else {
+            this.isRotatingLeft = false;
+        }
+
+        if (this.keyD?.isDown || this.cursors.right.isDown) {
+            this.isRotatingRight = true;
+        }
+        else {
+            this.isRotatingRight = false;
+        }
+
+        if (this.keyW?.isDown || this.cursors.up.isDown) {
+            this.isMovingForward = true;
+        }
+        else {
+            this.isMovingForward = false;
+        }
+
+        if (this.keyS?.isDown || this.cursors.down.isDown) {
+            this.isMovingBackwards = true;
+        }
+        else {
+            this.isMovingBackwards = false;
+        }
+
+        if (
+            wasRotatingLeft !== this.isRotatingLeft ||
+            wasRotatingRight !== this.isRotatingRight ||
+            wasMovingForward !== this.isMovingForward ||
+            wasMovingBackwards !== this.isMovingBackwards
+        ) {
+            this.gameManager.socket.emit('playerInput', {
+                isRotatingLeft: this.isRotatingLeft,
+                isRotatingRight: this.isRotatingRight,
+                isMovingForward: this.isMovingForward,
+                isMovingBackwards: this.isMovingBackwards
+            });
+        }
 
         this.players.children.each(player => {
             player.update();

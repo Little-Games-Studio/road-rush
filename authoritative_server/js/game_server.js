@@ -42,7 +42,13 @@ function create() {
     io.on('connection', function (socket) {
 
         players[socket.id] = {
-            id: socket.id
+            id: socket.id,
+            input: {
+                isRotatingLeft: false,
+                isRotatingRight: false,
+                isMovingForward: false,
+                isMovingBackwards: false
+            }
         };
 
         console.log('player', socket.id, 'connected to server, current players: ', Object.keys(players).length);
@@ -165,11 +171,55 @@ function create() {
             players[socket.id].username = username;
         });
 
-
+        // when a player moves, update the player data
+        socket.on('playerInput', function (inputData) {
+            players[socket.id].input = inputData;
+        });
     });
 }
 
-function update() { }
+function update() {
+
+    this.players_physics_group.getChildren().forEach((player_physics) => {
+
+        const input = players[player_physics.id].input;
+
+        player_physics.setVelocity(0, 0);
+        player_physics.setAngularVelocity(0);
+        player_physics.setAcceleration(0);
+
+        if (input.isMovingForward) {
+
+            if (input.isRotatingLeft) {
+                player_physics.setAngularVelocity(-200);
+            }
+            else if (input.isRotatingRight) {
+                player_physics.setAngularVelocity(200);
+            }
+
+            this.physics.velocityFromAngle(player_physics.angle - 90, 500, player_physics.body.velocity)
+        }
+        else if (input.isMovingBackwards) {
+
+            if (input.isRotatingLeft) {
+                player_physics.setAngularVelocity(-200);
+            }
+            else if (input.isRotatingRight) {
+                player_physics.setAngularVelocity(200);
+            }
+
+            this.physics.velocityFromAngle(player_physics.angle + 90, 500, player_physics.body.velocity)
+        }
+        
+        players[player_physics.id].position.x = player_physics.body.x;
+        players[player_physics.id].position.y = player_physics.body.y;
+        players[player_physics.id].rotation = player_physics.body.rotation;
+        players[player_physics.id].angle = player_physics.angle;
+        players[player_physics.id].velocity = player_physics.body.velocity;
+
+        io.emit('playerUpdates', sessions[players[player_physics.id].session].players);
+    });
+}
 
 function addPlayerToSession(self, socket, session) {
 
@@ -185,7 +235,7 @@ function addPlayerToSession(self, socket, session) {
 }
 
 function addPlayerToPhysicsGroup(self, playerInfo) {
-    const player = self.physics.add.image(playerInfo.x, playerInfo.y, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+    const player = self.physics.add.image(playerInfo.position.x, playerInfo.position.y, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
     player.id = playerInfo.id;
     self.players_physics_group.add(player);
 }
