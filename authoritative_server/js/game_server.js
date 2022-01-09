@@ -223,6 +223,8 @@ function update() {
         players[player_physics.id].angle = player_physics.angle;
         players[player_physics.id].velocity = player_physics.body.velocity * input.delta;
 
+        this.physics.world.wrap(this.players_physics_group, 5);
+
         io.emit('playerUpdates', sessions[players[player_physics.id].session].players);
     });
 }
