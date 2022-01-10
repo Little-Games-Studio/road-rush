@@ -41,6 +41,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             font: '24px Calibri'
         }).setOrigin(0.5, 0.5);
 
+        this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 3);
+
         this.setTint(playerInfo.color);
         this.text.setTint(playerInfo.color);
     }
