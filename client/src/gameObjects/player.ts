@@ -1,3 +1,4 @@
+import { throws } from 'assert';
 import * as Phaser from 'phaser';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
@@ -8,7 +9,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     private text: Phaser.GameObjects.Text;
 
-    private collider_radius: integer = 25;
+    private collider_radius: integer;
     private collider_front: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
     private collider_center: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
     private collider_back: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
@@ -19,6 +20,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.id = playerInfo.id;
         this.player_type = player_type;
+        this.collider_radius = playerInfo.collider_radius;
         
         scene.add.existing(this);
 

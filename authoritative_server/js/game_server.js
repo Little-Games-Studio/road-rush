@@ -27,6 +27,7 @@ const colors = [
     0x1FDE68 /* green */,
     0xAA5FE2 /* purple */
 ];
+const collider_radius = 25;
 
 function preload() {
     this.load.image('player', 'assets/player.png');
@@ -236,6 +237,7 @@ function addPlayerToSession(self, socket, session) {
     players[socket.id].session = session;
     players[socket.id].position = sessions[session].positions.shift();
     players[socket.id].color = sessions[session].colors.shift();
+    players[socket.id].collider_radius = collider_radius;
 
     sessions[session].players.push(players[socket.id]);
 

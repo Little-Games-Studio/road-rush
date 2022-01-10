@@ -100,9 +100,9 @@ export class GameScene extends Phaser.Scene {
 
         this.gameManager.socket.on('currentPlayers', (players) => {
 
-            /* this.players.children.entries.forEach((player) => {
+            this.players.children.entries.forEach((player) => {
                 player.destroy();
-            }); */
+            });
 
             this.players.clear(true, true)
 
