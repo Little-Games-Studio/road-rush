@@ -64,7 +64,7 @@ function create() {
                 
                 if (data.number_of_players == 1) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position, angle: 0 }
                     ]
 
                     session_colors.push(colors[0])
@@ -72,8 +72,8 @@ function create() {
                 
                 if (data.number_of_players == 2) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: y_position }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: y_position, angle: 0 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: y_position, angle: 180 }
                     ]
 
                     session_colors.push(colors[0])
@@ -82,9 +82,9 @@ function create() {
 
                 if (data.number_of_players == 3) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: y_position }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position, angle: 0 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: y_position, angle: 180 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: y_position, angle: 180 }
                     ]
 
                     session_colors.push(colors[0])
@@ -94,10 +94,10 @@ function create() {
 
                 if (data.number_of_players == 4) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 300, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 300, y: y_position }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 150, y: y_position, angle: 0 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 150, y: y_position, angle: 180 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 300, y: y_position, angle: 0 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 300, y: y_position, angle: 180 }
                     ]
 
                     session_colors.push(colors[0])
@@ -108,11 +108,11 @@ function create() {
                     
                 if (data.number_of_players == 5) {
                     session_positions = [
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 400, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: y_position },
-                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 400, y: y_position }
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2, y: y_position, angle: 0 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 200, y: y_position, angle: 180 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 200, y: y_position, angle: 180 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 - 400, y: y_position, angle: 0 },
+                        { x: self.cameras.main.worldView.x + self.cameras.main.width / 2 + 400, y: y_position, angle: 0 }
                     ]
 
                     session_colors.push(colors[0])
@@ -243,9 +243,15 @@ function addPlayerToSession(self, socket, session) {
 }
 
 function addPlayerToPhysicsGroup(self, playerInfo) {
-    const player = self.physics.add.image(playerInfo.position.x, playerInfo.position.y, 'player').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-    player.id = playerInfo.id;
-    self.players_physics_group.add(player);
+
+    const newPlayerGameObject = self.physics.add.image(playerInfo.position.x, playerInfo.position.y, 'player')
+        .setOrigin(0.5, 0.5)
+        .setDisplaySize(53, 40)
+        .setAngle(playerInfo.position.angle);
+    
+    newPlayerGameObject.id = playerInfo.id;
+
+    self.players_physics_group.add(newPlayerGameObject);
 }
 
 function removePlayerFromSession(self, socket, message) {
