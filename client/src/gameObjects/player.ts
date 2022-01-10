@@ -22,8 +22,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         
         scene.add.existing(this);
 
-        console.log(playerInfo.position.flipY, playerInfo.position.angle)
-
         this.collider_front = this.scene.physics.add.image(playerInfo.position.x, playerInfo.position.y - 25, '');
         this.collider_front.visible = false;
         this.collider_front.body.setCircle(this.collider_radius, -8, -8);
