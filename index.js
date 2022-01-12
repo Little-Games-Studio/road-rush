@@ -17,7 +17,7 @@ const io = require('socket.io')(server);
 app.use(express.static(__dirname + '/public'));
 
 function setupAuthoritativePhaser() {
-    JSDOM.fromFile(path.join(__dirname, 'authoritative_server/index.html'), {
+    JSDOM.fromFile(path.join(__dirname, 'server/dist/index.html'), {
         // To run the scripts in the html file
         runScripts: "dangerously",
         // Also load supported external resources

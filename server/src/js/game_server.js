@@ -1,6 +1,10 @@
+import Phaser from 'phaser'
+
+import * as player from './../assets/player.png'
+
 const config = {
     type: Phaser.HEADLESS,
-    parent: 'phaser-example',
+    parent: 'game',
     autoFocus: false,
     width: 1600,
     height: 768,
@@ -30,7 +34,7 @@ const colors = [
 const collider_radius = 25;
 
 function preload() {
-    this.load.image('player', 'assets/player.png');
+    this.load.image('player', player);
 }
 
 function create() {

@@ -22,8 +22,9 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
-        "build": "webpack --config webpack/webpack.config.prod.js",
-        "build-dev": "webpack --config webpack/webpack.config.base.js",
+        "build": "webpack --config webpack/webpack.config.client.prod.js && npm run build-server-dev",
+        "build-client-dev": "webpack --config webpack/webpack.config.client.base.js",
+        "build-server-dev": "webpack --config webpack/webpack.config.server.base.js",
         "test": "node test.js"
     },
     "dependencies": {
