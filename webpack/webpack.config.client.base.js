@@ -7,7 +7,7 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
     mode: "development",
     devtool: "eval-source-map",
-    entry: "./client/src/index.js",
+    entry: "./src/client/index.js",
     resolve: {
         extensions: [".ts", ".tsx", ".js"]
     },
