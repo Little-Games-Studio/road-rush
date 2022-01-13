@@ -62,7 +62,7 @@ module.exports = {
             WEBGL_RENDERER: JSON.stringify(true)
         }),
         new HtmlWebpackPlugin({
-            template: "./server/src/index.html",
+            template: "./src/index.html",
             filename: "index.html",
             inject: "body"
         })
