@@ -7,12 +7,12 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
     mode: "development",
     devtool: "eval-source-map",
-    entry: "./server/src/js/game_server.js",
+    entry: "./src/server/game_server.js",
     resolve: {
         extensions: [".ts", ".tsx", ".js"]
     },
     output: {
-        path: path.resolve("./server/dist"),
+        path: path.resolve("./dist/server"),
         filename: "index_bundle.js"
     },
     module: {

@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-import * as player from './../assets/player.png'
+import * as player from './assets/player.png'
 
 const config = {
     type: Phaser.HEADLESS,
