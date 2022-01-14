@@ -214,10 +214,10 @@ export class MainServerScene extends Phaser.Scene {
             else if (input.isMovingBackwards) {
 
                 if (input.isRotatingLeft) {
-                    player_physics.setAngularVelocity(-200);
+                    player_physics.setAngularVelocity(200);
                 }
                 else if (input.isRotatingRight) {
-                    player_physics.setAngularVelocity(200);
+                    player_physics.setAngularVelocity(-200);
                 }
 
                 this.physics.velocityFromAngle(player_physics.angle + 90, 500, player_physics.body.velocity)
