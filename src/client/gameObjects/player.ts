@@ -5,7 +5,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     public id: integer;
     public player_type: string;
     public speed: integer = 500;
-
+    
     private text: Phaser.GameObjects.Text;
 
     private collider_radius: integer;

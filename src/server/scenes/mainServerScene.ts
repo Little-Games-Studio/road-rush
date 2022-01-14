@@ -251,23 +251,28 @@ export class MainServerScene extends Phaser.Scene {
 
     addPlayerToPhysicsGroup(playerInfo) {
 
-        const player = new Player(this, playerInfo);
+        var new_player = new Player(this, playerInfo);
 
-        player
-            .setOrigin(0.5, 0.5)
-            .setDisplaySize(53, 40)
+        new_player
             .setAngle(playerInfo.position.angle);
+        
+        this.players_physics_group.add(new_player);
+        
+        this.physics.add.collider(
+            this.players_physics_group,
+            this.players_physics_group,
+            (player_1: any, player_2: any) => {
+                console.log('collision', player_1.id, player_2.id)
+                /* var v = _car_component.body.velocity;
 
-        this.players_physics_group.add(player);
+                player.body.velocity.copy(v);
+                player.collider_front.body.velocity.copy(v);
+                player.collider_center.body.velocity.copy(v);
+                player.collider_back.body.velocity.copy(v); */
+            }
+        );
 
-        /* this.physics.add.collider(asteroid, [s1, s2, s3], function (_asteroid, shipComponent) {
-var v = shipComponent.body.velocity;
-
-ship.body.velocity.copy(v);
-s1.body.velocity.copy(v);
-s2.body.velocity.copy(v);
-s3.body.velocity.copy(v);
-}); */
+        
     }
 
     removePlayerFromSession(socket, message) {
