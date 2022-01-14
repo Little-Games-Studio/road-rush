@@ -259,6 +259,15 @@ export class MainServerScene extends Phaser.Scene {
             .setAngle(playerInfo.position.angle);
 
         this.players_physics_group.add(player);
+
+        /* this.physics.add.collider(asteroid, [s1, s2, s3], function (_asteroid, shipComponent) {
+var v = shipComponent.body.velocity;
+
+ship.body.velocity.copy(v);
+s1.body.velocity.copy(v);
+s2.body.velocity.copy(v);
+s3.body.velocity.copy(v);
+}); */
     }
 
     removePlayerFromSession(socket, message) {

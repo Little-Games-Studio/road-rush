@@ -52,15 +52,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.centerBodyOnXY(this.collider_front.body, this.body.x + this.body.halfWidth, this.body.y + this.collider_radius);
         this.centerBodyOnBody(this.collider_center.body, this.body);
         this.centerBodyOnXY(this.collider_back.body, this.body.x + this.body.halfWidth, this.body.y + this.body.height - this.collider_radius);
-
-        /* this.physics.add.collider(asteroid, [s1, s2, s3], function (_asteroid, shipComponent) {
-            var v = shipComponent.body.velocity;
-
-            ship.body.velocity.copy(v);
-            s1.body.velocity.copy(v);
-            s2.body.velocity.copy(v);
-            s3.body.velocity.copy(v);
-        }); */
     }
 
     update(time, delta): void {
