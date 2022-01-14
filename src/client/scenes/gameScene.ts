@@ -1,9 +1,9 @@
 import * as Phaser from 'phaser';
 import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
 
-import * as road from './../assets/images/background/road.png'
+import * as road from './../../assets/images/background/road.png'
 //import * as racing_mp3 from './../assets/audio/racing.mp3'
-import * as race_car from './../assets/images/race_car.png'
+import * as race_car from './../../assets/images/race_car.png'
 
 import { Player } from '../gameObjects/player';
 

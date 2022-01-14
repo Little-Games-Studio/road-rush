@@ -1,4 +1,3 @@
-import { throws } from 'assert';
 import * as Phaser from 'phaser';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
