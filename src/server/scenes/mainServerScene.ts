@@ -11,6 +11,10 @@ const sceneConfig = {
     physics: {
         arcade: {
             debug: process.env.ENV == 'development' ? true : false,
+        },
+        matter: {
+            debug: process.env.ENV == 'development' ? true : false,
+            gravity: false
         }
     },
 };
@@ -24,11 +28,13 @@ const colors = [
     0x1FDE68 /* green */,
     0xAA5FE2 /* purple */
 ];
-const collider_radius = 25;
+
+const rotation_speed = 0.1;
+const acceleration = 0.1;
 
 export class MainServerScene extends Phaser.Scene {
 
-    private players_physics_group;
+    private player_game_objects: any[];
 
     constructor() {
         super(sceneConfig);
@@ -41,12 +47,16 @@ export class MainServerScene extends Phaser.Scene {
     create() {
         const y_position = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
-        this.players_physics_group = this.physics.add.group();
+        this.matter.world.setBounds();
+
+        this.player_game_objects = [];
+
         // @ts-ignore
         io.on('connection', (socket) => {
 
             players[socket.id] = {
                 id: socket.id,
+                max_speed: 15,
                 input: {
                     isRotatingLeft: false,
                     isRotatingRight: false,
@@ -130,7 +140,8 @@ export class MainServerScene extends Phaser.Scene {
                         max_players: data.number_of_players,
                         players: [],
                         positions: session_positions,
-                        colors: session_colors
+                        colors: session_colors,
+                        collider_group: this.matter.world.nextGroup()
                     };
 
                     this.addPlayerToSession(socket, session);
@@ -192,44 +203,72 @@ export class MainServerScene extends Phaser.Scene {
 
     update(time, delta) {
 
-        this.players_physics_group.getChildren().forEach((player_physics) => {
+        var staticFriction = 1;
+
+        this.player_game_objects.forEach((player_physics: Player) => {
 
             const input = players[player_physics.id].input;
 
-            player_physics.setVelocity(0, 0);
-            player_physics.setAngularVelocity(0);
-            player_physics.setAcceleration(0);
-
-            if (input.isMovingForward) {
-
-                if (input.isRotatingLeft) {
-                    player_physics.setAngularVelocity(-200);
-                }
-                else if (input.isRotatingRight) {
-                    player_physics.setAngularVelocity(200);
-                }
-
-                this.physics.velocityFromAngle(player_physics.angle - 90, 500, player_physics.body.velocity)
+            if (input.isMovingForward && player_physics.speed < players[player_physics.id].max_speed) {
+                player_physics.speed += acceleration;
             }
-            else if (input.isMovingBackwards) {
-
-                if (input.isRotatingLeft) {
-                    player_physics.setAngularVelocity(200);
+            else {
+                if (player_physics.speed > 0 && !input.isMovingBackwards) {
+                    if (player_physics.speed - player_physics.speed * acceleration > 0)
+                        player_physics.speed -= player_physics.speed * acceleration;
+                    else
+                        player_physics.speed = 0;
                 }
-                else if (input.isRotatingRight) {
-                    player_physics.setAngularVelocity(-200);
-                }
-
-                this.physics.velocityFromAngle(player_physics.angle + 90, 500, player_physics.body.velocity)
             }
 
-            players[player_physics.id].position.x = player_physics.body.x;
-            players[player_physics.id].position.y = player_physics.body.y;
-            players[player_physics.id].rotation = player_physics.body.rotation;
+            if (input.isMovingBackwards && player_physics.speed > -players[player_physics.id].max_speed) {
+                player_physics.speed -= acceleration;
+            }
+            else {
+                if (player_physics.speed < 0) {
+                    if (player_physics.speed + player_physics.speed * acceleration < 0)
+                        player_physics.speed += player_physics.speed * acceleration;
+                    else
+                        player_physics.speed = 0;
+                }
+            }
+
+            var rotation = 0;
+
+            if (player_physics.speed > 0) {
+
+                if (input.isRotatingLeft) {
+                    rotation -= rotation_speed;
+                }
+                else if (input.isRotatingRight) {
+                    rotation += rotation_speed;
+                }
+            }
+
+            if (player_physics.speed < 0) {
+
+                if (input.isRotatingLeft) {
+                    rotation += rotation_speed;
+                }
+                else if (input.isRotatingRight) {
+                    rotation -= rotation_speed;
+                }
+            }
+            
+            //if we have enough power, allow movement
+            /* if (player_physics.speed > staticFriction) { */
+                player_physics.setAngularVelocity(rotation * player_physics.speed/10);
+
+                player_physics.setVelocityX(Math.sin(player_physics.rotation) * player_physics.speed);
+                player_physics.setVelocityY(-Math.cos(player_physics.rotation) * player_physics.speed);
+            /* } */
+
+            players[player_physics.id].position.x = player_physics.x;
+            players[player_physics.id].position.y = player_physics.y;
+            players[player_physics.id].rotation = player_physics.rotation;
             players[player_physics.id].angle = player_physics.angle;
-            players[player_physics.id].velocity = player_physics.body.velocity * input.delta;
 
-            this.physics.world.wrap(this.players_physics_group, 5);
+            //this.physics.world.wrap(this.players_physics_group, 5);
             // @ts-ignore
             io.emit('playerUpdates', sessions[players[player_physics.id].session].players);
         });
@@ -242,7 +281,6 @@ export class MainServerScene extends Phaser.Scene {
         players[socket.id].session = session;
         players[socket.id].position = sessions[session].positions.shift();
         players[socket.id].color = sessions[session].colors.shift();
-        players[socket.id].collider_radius = collider_radius;
 
         sessions[session].players.push(players[socket.id]);
         // @ts-ignore
@@ -256,9 +294,9 @@ export class MainServerScene extends Phaser.Scene {
         new_player
             .setAngle(playerInfo.position.angle);
         
-        this.players_physics_group.add(new_player);
+        this.player_game_objects.push(new_player);
         
-        this.physics.add.collider(
+        /* this.physics.add.collider(
             this.players_physics_group,
             this.players_physics_group,
             (player_1: any, player_2: any) => {
@@ -269,8 +307,8 @@ export class MainServerScene extends Phaser.Scene {
                 player.collider_front.body.velocity.copy(v);
                 player.collider_center.body.velocity.copy(v);
                 player.collider_back.body.velocity.copy(v); */
-            }
-        );
+           /* }
+        ); */
 
         
     }
@@ -304,7 +342,7 @@ export class MainServerScene extends Phaser.Scene {
     }
 
     removePlayerFromPhysicsGroup(id) {
-        this.players_physics_group.getChildren().forEach((player) => {
+        this.player_game_objects.forEach((player) => {
             if (id === player.id) {
                 player.destroy();
             }

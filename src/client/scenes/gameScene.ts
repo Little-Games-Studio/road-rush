@@ -27,7 +27,7 @@ export class GameScene extends Phaser.Scene {
     public player: Player;
 
     private gameManager: any;
-    private players: Phaser.Physics.Arcade.Group;
+    private players: any[];
 
     public road: Phaser.GameObjects.TileSprite;
 
@@ -59,6 +59,8 @@ export class GameScene extends Phaser.Scene {
 
         this.gameManager = this.plugins.get('GameManager');
 
+        this.matter.world.setBounds();
+
         // KEYS
         this.keyW = this.input.keyboard.addKey('W');
         this.keyA = this.input.keyboard.addKey('A');
@@ -67,9 +69,9 @@ export class GameScene extends Phaser.Scene {
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.players = this.physics.add.group();
+        this.players = [];
 
-        const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
+        /* const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2; */
 
         this.road = this.add.tileSprite(0, 0, 1600, 768, 'road').setOrigin(0);
 
@@ -100,11 +102,11 @@ export class GameScene extends Phaser.Scene {
 
         this.gameManager.socket.on('currentPlayers', (players) => {
 
-            this.players.children.entries.forEach((player) => {
+            this.players.forEach((player) => {
                 player.destroy();
             });
 
-            this.players.clear(true, true)
+            this.players = [];
 
             Object.keys(players).forEach((id) => {
                 
@@ -119,7 +121,7 @@ export class GameScene extends Phaser.Scene {
 
         this.gameManager.socket.on('playerUpdates', (players) => {
             Object.keys(players).forEach((id) => {
-                this.players.children.entries.forEach((player: Player) => {
+                this.players.forEach((player: Player) => {
                     if (players[id].id === player.id) {
                         player.setPosition(players[id].position.x, players[id].position.y);
                         player.setAngle(players[id].angle);
@@ -175,7 +177,7 @@ export class GameScene extends Phaser.Scene {
             this.isMovingForward = true;
         }
         else {
-            this.isMovingForward = false;
+            this.isMovingForward = false; 
         }
 
         if (this.keyS?.isDown || this.cursors.down.isDown) {
@@ -200,13 +202,15 @@ export class GameScene extends Phaser.Scene {
             });
         }
 
-        this.players.children.each(player => {
+        //console.log(this.speed)
+
+        this.players.forEach(player => {
             player.update();
         });
     }
 
     displayPlayer(playerInfo, playerType) {
         const player = new Player(this, playerInfo, playerType);
-        this.players.add(player);
+        this.players.push(player);
     }
 }
