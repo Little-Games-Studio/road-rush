@@ -16,9 +16,14 @@ export class Player extends Phaser.Physics.Matter.Sprite {
         
         scene.add.existing(this);
 
-        this.text = scene.add.text(playerInfo.position.x, playerInfo.position.y, playerInfo.username, {
-            font: '24px Calibri'
-        }).setOrigin(0.5, 0.5);
+        this.text = scene.add.text(
+            playerInfo.position.x,
+            playerInfo.position.y + 70,
+            playerInfo.username,
+            {
+                font: '24px Calibri'
+            }
+        ).setOrigin(0.5, 0.5);
 
         this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 3);
 
@@ -31,8 +36,7 @@ export class Player extends Phaser.Physics.Matter.Sprite {
     }
 
     update(time, delta): void {
-
-        this.text.setPosition(this.x + this.width / 2, this.y + this.height + 10);
+        this.text.setPosition(this.x, this.y + 70);
     }
 
     destroy() {
