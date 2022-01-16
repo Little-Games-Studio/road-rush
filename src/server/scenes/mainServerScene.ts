@@ -58,6 +58,7 @@ export class MainServerScene extends Phaser.Scene {
 
             players[socket.id] = {
                 id: socket.id,
+                health: 100,
                 max_speed: 15,
                 input: {
                     isRotatingLeft: false,
@@ -269,6 +270,7 @@ export class MainServerScene extends Phaser.Scene {
             players[player_physics.id].position.y = player_physics.y;
             players[player_physics.id].rotation = player_physics.rotation;
             players[player_physics.id].angle = player_physics.angle;
+            players[player_physics.id].health = player_physics.health;
 
             //this.physics.world.wrap(this.players_physics_group, 5);
             // @ts-ignore

@@ -112,6 +112,7 @@ export class GameScene extends Phaser.Scene {
                     if (players[id].id === player.id) {
                         player.setPosition(players[id].position.x, players[id].position.y);
                         player.setAngle(players[id].angle);
+                        player.health = players[id].health;
                     }
                 });
             });
