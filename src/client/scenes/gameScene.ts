@@ -5,13 +5,14 @@ import * as road from './../../assets/images/background/road.png'
 //import * as racing_mp3 from './../assets/audio/racing.mp3'
 import * as race_car from './../../assets/images/race_car.png'
 
-import { Player } from '../gameObjects/player';
+import { Player } from '../gameObjects/local_player';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
     visible: true,
     key: 'GameScene',
     physics: {
+        default: 'matter',
         arcade: {
             debug: process.env.ENV == 'development' ? true: false,
         },
@@ -50,7 +51,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     preload(): void {
-        this.load.image('road', road);
+        /* this.load.image('road', road); */
         this.load.image('race_car', race_car);
         //this.load.audio('music', [music]);
     }
@@ -58,8 +59,6 @@ export class GameScene extends Phaser.Scene {
     create(): void {
 
         this.gameManager = this.plugins.get('GameManager');
-
-        this.matter.world.setBounds();
 
         // KEYS
         this.keyW = this.input.keyboard.addKey('W');
@@ -73,7 +72,7 @@ export class GameScene extends Phaser.Scene {
 
         /* const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2; */
 
-        this.road = this.add.tileSprite(0, 0, 1600, 768, 'road').setOrigin(0);
+        /* this.road = this.add.tileSprite(0, 0, 1600, 768, 'road').setOrigin(0); */
 
         this.add.text(30, 30, 'Session:', { font: '22px Calibri' });
 
@@ -91,13 +90,7 @@ export class GameScene extends Phaser.Scene {
         this.add.existing(inputText);
 
         Object.keys(this.gameManager.players).forEach((id) => {
-
-            if (this.gameManager.players[id].id === this.gameManager.socket.id) {
-                this.displayPlayer(this.gameManager.players[id], 'self');
-            }
-            else {
-                this.displayPlayer(this.gameManager.players[id], 'enemy');
-            }
+            this.displayPlayer(this.gameManager.players[id]);
         });
 
         this.gameManager.socket.on('currentPlayers', (players) => {
@@ -109,13 +102,7 @@ export class GameScene extends Phaser.Scene {
             this.players = [];
 
             Object.keys(players).forEach((id) => {
-                
-                if (players[id].id === this.gameManager.socket.id) {
-                    this.displayPlayer(players[id], 'self');
-                }
-                else {
-                    this.displayPlayer(players[id], 'enemy');
-                }
+                this.displayPlayer(players[id]);
             });
         });
 
@@ -209,8 +196,8 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
-    displayPlayer(playerInfo, playerType) {
-        const player = new Player(this, playerInfo, playerType);
+    displayPlayer(playerInfo) {
+        const player = new Player(this, playerInfo);
         this.players.push(player);
     }
 }

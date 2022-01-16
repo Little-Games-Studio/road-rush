@@ -9,6 +9,7 @@ const sceneConfig = {
     visible: true,
     key: 'MainServerScene',
     physics: {
+        default: 'matter',
         arcade: {
             debug: process.env.ENV == 'development' ? true : false,
         },
@@ -31,6 +32,7 @@ const colors = [
 
 const rotation_speed = 0.1;
 const acceleration = 0.1;
+const staticFriction = 1;
 
 export class MainServerScene extends Phaser.Scene {
 
@@ -179,14 +181,10 @@ export class MainServerScene extends Phaser.Scene {
 
             socket.on('leave-session', () => {
                 this.removePlayerFromSession(socket, 'player ' + socket.id + ' left the session');
-                this.removePlayerFromPhysicsGroup(socket.id);
             });
 
             socket.on('disconnect', () => {
                 this.removePlayerFromSession(socket, 'player ' + socket.id + ' disconnected')
-                this.removePlayerFromPhysicsGroup(socket.id);
-                delete players[socket.id];
-
                 console.log('player', socket.id, 'disconnected from server, current players: ', Object.keys(players).length);
             });
 
@@ -203,8 +201,6 @@ export class MainServerScene extends Phaser.Scene {
 
     update(time, delta) {
 
-        var staticFriction = 1;
-
         this.player_game_objects.forEach((player_physics: Player) => {
 
             const input = players[player_physics.id].input;
@@ -212,22 +208,21 @@ export class MainServerScene extends Phaser.Scene {
             if (input.isMovingForward && player_physics.speed < players[player_physics.id].max_speed) {
                 player_physics.speed += acceleration;
             }
-            else {
-                if (player_physics.speed > 0 && !input.isMovingBackwards) {
+
+            if (input.isMovingBackwards && player_physics.speed > -players[player_physics.id].max_speed) {
+                player_physics.speed -= acceleration;
+            }
+
+            if (!input.isMovingForward && !input.isMovingBackwards) {
+                if (player_physics.speed > 0) {
                     if (player_physics.speed - player_physics.speed * acceleration > 0)
                         player_physics.speed -= player_physics.speed * acceleration;
                     else
                         player_physics.speed = 0;
                 }
-            }
-
-            if (input.isMovingBackwards && player_physics.speed > -players[player_physics.id].max_speed) {
-                player_physics.speed -= acceleration;
-            }
-            else {
-                if (player_physics.speed < 0) {
-                    if (player_physics.speed + player_physics.speed * acceleration < 0)
-                        player_physics.speed += player_physics.speed * acceleration;
+                else if (player_physics.speed < 0) {
+                    if (player_physics.speed + player_physics.speed * -acceleration < 0)
+                        player_physics.speed += player_physics.speed * -acceleration;
                     else
                         player_physics.speed = 0;
                 }
@@ -339,13 +334,24 @@ export class MainServerScene extends Phaser.Scene {
             console.log('player', socket.id, 'left session', session)
             console.log('current sessions:', sessions)
         }
+
+        this.removePlayerFromPhysicsGroup(socket.id);
+
+        delete players[socket.id];
     }
 
     removePlayerFromPhysicsGroup(id) {
+        var index = -1;
         this.player_game_objects.forEach((player) => {
             if (id === player.id) {
+                index = this.player_game_objects.indexOf(player);
+                this.matter.world.remove(player);
                 player.destroy();
             }
         });
+
+        if (index > -1) {
+            this.player_game_objects.splice(index, 1);
+        }
     }
 }
