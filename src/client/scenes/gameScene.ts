@@ -74,9 +74,9 @@ export class GameScene extends Phaser.Scene {
 
         /* this.road = this.add.tileSprite(0, 0, 1600, 768, 'road').setOrigin(0); */
 
-        this.add.text(30, 30, 'Session:', { font: '22px Calibri' });
+        this.add.text(30, this.cameras.main.height - 40, 'Session:', { font: '22px Calibri' });
 
-        var inputText = new InputText(this, 260, 42, 300, 30, { // x, y, width, height
+        var inputText = new InputText(this, 260, this.cameras.main.height - 28, 300, 30, { // x, y, width, height
             type: 'text',
             text: this.gameManager.session,
             fontSize: '22px',
@@ -85,15 +85,15 @@ export class GameScene extends Phaser.Scene {
             align: 'left',
         });
 
-        this.add.text(30, 70, this.gameManager.getUsername(), { font: '28px Calibri' });
-
         this.add.existing(inputText);
 
         Object.keys(this.gameManager.players).forEach((id) => {
             this.displayPlayer(this.gameManager.players[id]);
         });
 
-        this.gameManager.socket.on('currentPlayers', (players) => {
+        this.gameManager.socket.on('currentPlayers', (players_sent_from_server) => {
+
+            console.log('gameScene - currentPlayers')
 
             this.players.forEach((player) => {
                 player.destroy();
@@ -101,8 +101,8 @@ export class GameScene extends Phaser.Scene {
 
             this.players = [];
 
-            Object.keys(players).forEach((id) => {
-                this.displayPlayer(players[id]);
+            Object.keys(players_sent_from_server).forEach((id) => {
+                this.displayPlayer(players_sent_from_server[id]);
             });
         });
 

@@ -59,7 +59,7 @@ export class MainServerScene extends Phaser.Scene {
             players[socket.id] = {
                 id: socket.id,
                 health: 100,
-                max_speed: 15,
+                max_speed: 10,
                 input: {
                     isRotatingLeft: false,
                     isRotatingRight: false,
@@ -208,7 +208,7 @@ export class MainServerScene extends Phaser.Scene {
             const input = players[player_physics.id].input;
 
             if (player_physics.health > 0) {
-                
+
                 if (input.isMovingForward) {
                     if (player_physics.speed < players[player_physics.id].max_speed) {
                         player_physics.speed += acceleration;
@@ -290,6 +290,8 @@ export class MainServerScene extends Phaser.Scene {
         players[socket.id].color = sessions[session].colors.shift();
 
         sessions[session].players.push(players[socket.id]);
+
+        players[socket.id].hud_text_y_position = 30 * sessions[session].players.length;
         // @ts-ignore
         io.in('session-' + session).emit('currentPlayers', sessions[session].players);
     }
@@ -303,22 +305,6 @@ export class MainServerScene extends Phaser.Scene {
             .setBounce(0.5);
         
         this.player_game_objects.push(new_player);
-        
-        /* this.physics.add.collider(
-            this.players_physics_group,
-            this.players_physics_group,
-            (player_1: any, player_2: any) => {
-                console.log('collision', player_1.id, player_2.id)
-                /* var v = _car_component.body.velocity;
-
-                player.body.velocity.copy(v);
-                player.collider_front.body.velocity.copy(v);
-                player.collider_center.body.velocity.copy(v);
-                player.collider_back.body.velocity.copy(v); */
-           /* }
-        ); */
-
-        
     }
 
     removePlayerFromSession(socket, message) {
