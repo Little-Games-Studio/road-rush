@@ -203,17 +203,23 @@ export class MainServerScene extends Phaser.Scene {
 
         this.player_game_objects.forEach((player_physics: Player) => {
 
+            // handle speed change
             const input = players[player_physics.id].input;
 
-            if (input.isMovingForward && player_physics.speed < players[player_physics.id].max_speed) {
-                player_physics.speed += acceleration;
+            if (input.isMovingForward) {
+                if (player_physics.speed < players[player_physics.id].max_speed) {
+                    player_physics.speed += acceleration;
+                }
             }
 
-            if (input.isMovingBackwards && player_physics.speed > -players[player_physics.id].max_speed) {
-                player_physics.speed -= acceleration;
+            if (input.isMovingBackwards) {
+                if (player_physics.speed > -players[player_physics.id].max_speed) {
+                    player_physics.speed -= acceleration;
+                }
             }
 
-            if (!input.isMovingForward && !input.isMovingBackwards) {
+            // if player is colliding with something or not moving
+            if ((!input.isMovingForward && !input.isMovingBackwards)) {
                 if (player_physics.speed > 0) {
                     if (player_physics.speed - player_physics.speed * acceleration > 0)
                         player_physics.speed -= player_physics.speed * acceleration;
@@ -228,6 +234,7 @@ export class MainServerScene extends Phaser.Scene {
                 }
             }
 
+            // handle rotation change
             var rotation = 0;
 
             if (player_physics.speed > 0) {
@@ -287,7 +294,8 @@ export class MainServerScene extends Phaser.Scene {
         var new_player = new Player(this, playerInfo);
 
         new_player
-            .setAngle(playerInfo.position.angle);
+            .setAngle(playerInfo.position.angle)
+            .setBounce(0.5);
         
         this.player_game_objects.push(new_player);
         
