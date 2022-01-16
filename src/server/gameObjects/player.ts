@@ -26,26 +26,31 @@ export class Player extends Phaser.Physics.Matter.Sprite {
 
             var bodyA = data.bodyA as MatterJS.BodyType;
             var bodyB = data.bodyB as MatterJS.BodyType;
+
+            var health_to_substract = 0;
             
             if (bodyA.label === 'Rectangle Body') { // if player hits the walls
 
-                this.health -= bodyB.speed
+                health_to_substract = bodyB.speed;
             }
             else if (bodyB.label === 'Rectangle Body') { // if player hits the walls
 
-                this.health -= bodyA.speed
+                health_to_substract = bodyA.speed
             }
             else if (bodyA.label === 'player' && bodyB.label === 'player') { // if player hits other player
                /*  console.log(this.body, bodyA.parent.id, bodyB.parent.id) */
                 if (this.body == bodyA) {
-                    this.health -= bodyB.speed;
-                    this.health -= bodyA.speed / 4;
+                    health_to_substract = bodyB.speed + bodyA.speed / 4;
                 }
                 else if (this.body == bodyB) {
-                    this.health -= bodyA.speed
-                    this.health -= bodyB.speed / 4;
+                    health_to_substract = bodyA.speed + bodyB.speed / 4;
                 }
             }
+
+            if (this.health - health_to_substract > 0)
+                this.health = this.health - health_to_substract;
+            else
+                this.health = 0;
         });
 
         this.setOnCollideActive(() => {
@@ -60,7 +65,7 @@ export class Player extends Phaser.Physics.Matter.Sprite {
     }
 
     create() {
-
+        
     }
 
     update(time, delta): void {
