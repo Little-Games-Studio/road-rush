@@ -256,10 +256,10 @@ export class MainServerScene extends Phaser.Scene {
             if (player_physics.speed < 0) {
 
                 if (input.isRotatingLeft) {
-                    rotation += rotation_speed;
+                    rotation -= rotation_speed;
                 }
                 else if (input.isRotatingRight) {
-                    rotation -= rotation_speed;
+                    rotation += rotation_speed;
                 }
             }
             
