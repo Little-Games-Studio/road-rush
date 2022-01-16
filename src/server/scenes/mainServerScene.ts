@@ -47,9 +47,10 @@ export class MainServerScene extends Phaser.Scene {
     }
 
     create() {
-        const y_position = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
-        this.matter.world.setBounds();
+        this.matter.world.setBounds()
+
+        const y_position = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
         this.player_game_objects = [];
 
