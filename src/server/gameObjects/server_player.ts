@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser';
 
-import { shape } from './../../utils/player_utils';
+import { shape } from '../../utils/player_utils';
 
 export class Player extends Phaser.Physics.Matter.Sprite {
 

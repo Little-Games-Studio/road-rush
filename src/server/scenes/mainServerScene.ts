@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 
 import * as race_car from './../../assets/images/race_car.png'
 
-import { Player } from './../gameObjects/player';
+import { Player } from '../gameObjects/server_player';
 
 const sceneConfig = {
     active: false,
@@ -207,15 +207,18 @@ export class MainServerScene extends Phaser.Scene {
             // handle speed change
             const input = players[player_physics.id].input;
 
-            if (input.isMovingForward) {
-                if (player_physics.speed < players[player_physics.id].max_speed) {
-                    player_physics.speed += acceleration;
+            if (player_physics.health > 0) {
+                
+                if (input.isMovingForward) {
+                    if (player_physics.speed < players[player_physics.id].max_speed) {
+                        player_physics.speed += acceleration;
+                    }
                 }
-            }
 
-            if (input.isMovingBackwards) {
-                if (player_physics.speed > -players[player_physics.id].max_speed) {
-                    player_physics.speed -= acceleration;
+                if (input.isMovingBackwards) {
+                    if (player_physics.speed > -players[player_physics.id].max_speed) {
+                        player_physics.speed -= acceleration;
+                    }
                 }
             }
 
