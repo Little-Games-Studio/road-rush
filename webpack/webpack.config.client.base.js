@@ -15,6 +15,9 @@ module.exports = {
         path: path.resolve("./dist/client"),
         filename: "index_bundle.js"
     },
+    watchOptions: {
+        ignored: /node_modules/,
+    },
     module: {
         rules: [
             {
