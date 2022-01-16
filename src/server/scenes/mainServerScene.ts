@@ -144,11 +144,12 @@ export class MainServerScene extends Phaser.Scene {
                         players: [],
                         positions: session_positions,
                         colors: session_colors,
-                        collider_group: this.matter.world.nextGroup()
+                        collision_group: this.matter.world.nextGroup(),
+                        collision_category: this.matter.world.nextCategory()
                     };
 
                     this.addPlayerToSession(socket, session);
-                    this.addPlayerToPhysicsGroup(players[socket.id]);
+                    this.addPlayerToPhysicsGroup(players[socket.id], sessions[session].collision_group);
 
                     console.log('player', socket.id, 'created a session');
                     // @ts-ignore
@@ -166,7 +167,7 @@ export class MainServerScene extends Phaser.Scene {
                 if (sessions[session] && sessions[session].players.length < sessions[session].max_players) {
 
                     this.addPlayerToSession(socket, session);
-                    this.addPlayerToPhysicsGroup(players[socket.id]);
+                    this.addPlayerToPhysicsGroup(players[socket.id], sessions[session].collision_group);
 
                     console.log('player', socket.id, 'joined session', session, 'as', players[socket.id].username);
                     // @ts-ignore
@@ -296,9 +297,9 @@ export class MainServerScene extends Phaser.Scene {
         io.in('session-' + session).emit('currentPlayers', sessions[session].players);
     }
 
-    addPlayerToPhysicsGroup(playerInfo) {
+    addPlayerToPhysicsGroup(playerInfo, collision_group: number) {
 
-        var new_player = new Player(this, playerInfo);
+        var new_player = new Player(this, playerInfo, collision_group);
 
         new_player
             .setAngle(playerInfo.position.angle)
@@ -340,8 +341,11 @@ export class MainServerScene extends Phaser.Scene {
     }
 
     removePlayerFromPhysicsGroup(id) {
+
         var index = -1;
+
         this.player_game_objects.forEach((player) => {
+
             if (id === player.id) {
                 index = this.player_game_objects.indexOf(player);
                 this.matter.world.remove(player);

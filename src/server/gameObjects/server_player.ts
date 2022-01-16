@@ -9,7 +9,7 @@ export class Player extends Phaser.Physics.Matter.Sprite {
     public speed: number = 0;
     public is_colliding: boolean = false;
 
-    constructor(scene: Phaser.Scene, playerInfo: any) {
+    constructor(scene: Phaser.Scene, playerInfo: any, collision_group: number) {
 
         super(scene.matter.world, playerInfo.position.x, playerInfo.position.y, 'race_car', 0, {
             label: 'player',
@@ -20,6 +20,9 @@ export class Player extends Phaser.Physics.Matter.Sprite {
         this.id = playerInfo.id;
         this.health = 100;
         this.speed = 0;
+
+        this.setCollisionGroup(collision_group)
+        this.setCollidesWith(0)
 
         this.setOnCollide((data: Phaser.Types.Physics.Matter.MatterCollisionData) => {
             this.speed = -this.speed / 4;
