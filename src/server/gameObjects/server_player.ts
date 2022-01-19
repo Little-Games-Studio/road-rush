@@ -11,6 +11,8 @@ export class Player extends Phaser.Physics.Matter.Sprite {
     public speed: number = 0;
     public is_colliding: boolean = false;
 
+    
+
     constructor(scene: Phaser.Scene, playerInfo: any, collision_group: number) {
 
         super(scene.matter.world, playerInfo.position.x, playerInfo.position.y, 'race_car', 0, {
@@ -24,6 +26,9 @@ export class Player extends Phaser.Physics.Matter.Sprite {
         this.health = 100;
         this.speed = 0;
 
+        /* this.setCollisionGroup(collision_group);
+        this.setCollidesWith(0); */
+        
         this.setOnCollide((data: Phaser.Types.Physics.Matter.MatterCollisionData) => {
 
             var bodyA = data.bodyA as MatterJS.BodyType;
@@ -43,7 +48,7 @@ export class Player extends Phaser.Physics.Matter.Sprite {
                 collided = true;
             }
             else if (bodyA.label === 'player' && bodyB.label === 'player') { // if player hits other player
-          
+                
                 if (this.body == bodyA) {
                     var bodyB_parent = bodyB.gameObject as Player;
                     var bodyB_session = bodyB_parent.session;
@@ -66,12 +71,16 @@ export class Player extends Phaser.Physics.Matter.Sprite {
             }
 
             if (collided) {
+
                 if (this.health - health_to_substract > 0)
                     this.health = this.health - health_to_substract;
                 else
                     this.health = 0;
 
-                this.speed = -this.speed / 4;
+                if(this.speed > 0)
+                    this.speed = -1 * ((this.speed / 4) + 1);
+                else if (this.speed < 0)
+                    this.speed = -1 * ((this.speed / 4) - 1);
             }
         });
 

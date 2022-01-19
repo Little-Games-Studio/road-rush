@@ -37,6 +37,7 @@ const staticFriction = 1;
 export class MainServerScene extends Phaser.Scene {
 
     private player_game_objects: any[];
+    private non_colliding_group;
 
     constructor() {
         super(sceneConfig);
@@ -48,7 +49,30 @@ export class MainServerScene extends Phaser.Scene {
 
     create() {
 
-        this.matter.world.setBounds()
+        this.non_colliding_group = this.matter.world.nextGroup(true);
+
+        // create world bounds
+        //var world_bounds_colliding_group = this.matter.world.nextGroup();
+
+        let world_bound_top = this.matter.add.rectangle(this.cameras.main.centerX, 0, this.cameras.main.width, 1, {
+            isSensor: false,
+            isStatic: true
+        });
+
+        let world_bound_bottom = this.matter.add.rectangle(this.cameras.main.centerX, this.cameras.main.height, this.cameras.main.width, 1, {
+            isSensor: false,
+            isStatic: true
+        });
+
+        let world_bound_left = this.matter.add.rectangle(0, this.cameras.main.centerY, 1, this.cameras.main.height, {
+            isSensor: false,
+            isStatic: true
+        });
+
+        let world_bound_right = this.matter.add.rectangle(this.cameras.main.width, this.cameras.main.centerY, 1, this.cameras.main.height, {
+            isSensor: false,
+            isStatic: true
+        });
 
         const y_position = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
@@ -300,7 +324,7 @@ export class MainServerScene extends Phaser.Scene {
 
     addPlayerToPhysicsGroup(playerInfo, collision_group: number) {
 
-        var new_player = new Player(this, playerInfo, collision_group);
+        var new_player = new Player(this, playerInfo, this.non_colliding_group);
 
         new_player
             .setAngle(playerInfo.position.angle)

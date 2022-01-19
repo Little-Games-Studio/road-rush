@@ -14,7 +14,7 @@ export class Player extends Phaser.Physics.Matter.Sprite {
 
     constructor(scene: Phaser.Scene, playerInfo: any) {
         
-        super(scene.matter.world, playerInfo.position.x, playerInfo.position.y, 'race_car', 0, { label: 'player', isSensor: false, vertices: shape });
+        super(scene.matter.world, playerInfo.position.x, playerInfo.position.y, 'race_car', 0, { label: 'player', isSensor: true, vertices: shape });
         console.log(playerInfo.hud_text_y_position)
         this.id = playerInfo.id;
         this.username = playerInfo.username;
