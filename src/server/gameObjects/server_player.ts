@@ -9,9 +9,9 @@ export class Player extends Phaser.Physics.Matter.Sprite {
     public session: string;
     public health: number = 100;
     public speed: number = 0;
+    public rotation_speed = 0;
+    public max_rotation_speed = 10;
     public is_colliding: boolean = false;
-
-    
 
     constructor(scene: Phaser.Scene, playerInfo: any, collision_group: number) {
 
@@ -23,11 +23,6 @@ export class Player extends Phaser.Physics.Matter.Sprite {
 
         this.id = playerInfo.id;
         this.session = playerInfo.session;
-        this.health = 100;
-        this.speed = 0;
-
-        /* this.setCollisionGroup(collision_group);
-        this.setCollidesWith(0); */
         
         this.setOnCollide((data: Phaser.Types.Physics.Matter.MatterCollisionData) => {
 
@@ -36,36 +31,48 @@ export class Player extends Phaser.Physics.Matter.Sprite {
 
             var health_to_substract = 0;
             var collided = false;
+            var collided_with_world_bounds = false;
             
             if (bodyA.label === 'Rectangle Body') { // if player hits the walls
 
                 health_to_substract = bodyB.speed;
                 collided = true;
+                collided_with_world_bounds = true;
             }
             else if (bodyB.label === 'Rectangle Body') { // if player hits the walls
 
                 health_to_substract = bodyA.speed
                 collided = true;
+                collided_with_world_bounds = true;
             }
             else if (bodyA.label === 'player' && bodyB.label === 'player') { // if player hits other player
                 
+                var myBody = null;
+                var opponentsBody = null;
+
                 if (this.body == bodyA) {
-                    var bodyB_parent = bodyB.gameObject as Player;
-                    var bodyB_session = bodyB_parent.session;
-
-                    if (playerInfo.session == bodyB_session) {
-                        collided = true;
-                        health_to_substract = bodyB.speed + bodyA.speed / 4;
-                    }
-                    
+                    myBody = bodyA;
+                    opponentsBody = bodyB;
                 }
-                else if (this.body == bodyB) {
-                    var bodyA_parent = bodyA.gameObject as Player;
-                    var bodyA_session = bodyA_parent.session;
+                else {
+                    myBody = bodyB;
+                    opponentsBody = bodyA;
+                }
 
-                    if (playerInfo.session == bodyA_session) {
-                        collided = true;
-                        health_to_substract = bodyA.speed + bodyB.speed / 4;
+                var opponent = opponentsBody.gameObject as Player;
+                var opponents_session = opponent.session;
+
+                if (playerInfo.session == opponents_session) {
+                    collided = true;
+                    health_to_substract = opponentsBody.speed + myBody.speed / 4;
+
+                    //opponent.setPosition(opponent.body.position.x - this.speed, opponent.body.position.y - this.speed)
+
+                    if (this.speed > 0) {
+                        this.speed = -1 * ((this.speed / 4) + 1);
+                    }
+                    else if (this.speed < 0) {
+                        this.speed = -1 * ((this.speed / 4) - 1);
                     }
                 }
             }
@@ -77,10 +84,12 @@ export class Player extends Phaser.Physics.Matter.Sprite {
                 else
                     this.health = 0;
 
-                if(this.speed > 0)
-                    this.speed = -1 * ((this.speed / 4) + 1);
-                else if (this.speed < 0)
-                    this.speed = -1 * ((this.speed / 4) - 1);
+                if (collided_with_world_bounds) {
+                    if (this.speed > 0)
+                        this.speed = -1 * ((this.speed / 4) + 1);
+                    else if (this.speed < 0)
+                        this.speed = -1 * ((this.speed / 4) - 1);
+                }
             }
         });
 

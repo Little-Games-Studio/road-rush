@@ -30,7 +30,6 @@ const colors = [
     0xAA5FE2 /* purple */
 ];
 
-const rotation_speed = 0.1;
 const acceleration = 0.1;
 const staticFriction = 1;
 
@@ -51,25 +50,26 @@ export class MainServerScene extends Phaser.Scene {
 
         this.non_colliding_group = this.matter.world.nextGroup(true);
 
-        // create world bounds
-        //var world_bounds_colliding_group = this.matter.world.nextGroup();
-
-        let world_bound_top = this.matter.add.rectangle(this.cameras.main.centerX, 0, this.cameras.main.width, 1, {
+        // world_bound_top
+        this.matter.add.rectangle(this.cameras.main.centerX, 0, this.cameras.main.width, 1, {
             isSensor: false,
             isStatic: true
         });
 
-        let world_bound_bottom = this.matter.add.rectangle(this.cameras.main.centerX, this.cameras.main.height, this.cameras.main.width, 1, {
+        // world_bound_bottom
+        this.matter.add.rectangle(this.cameras.main.centerX, this.cameras.main.height, this.cameras.main.width, 1, {
             isSensor: false,
             isStatic: true
         });
 
-        let world_bound_left = this.matter.add.rectangle(0, this.cameras.main.centerY, 1, this.cameras.main.height, {
+        // world_bound_left
+        this.matter.add.rectangle(0, this.cameras.main.centerY, 1, this.cameras.main.height, {
             isSensor: false,
             isStatic: true
         });
 
-        let world_bound_right = this.matter.add.rectangle(this.cameras.main.width, this.cameras.main.centerY, 1, this.cameras.main.height, {
+        // world_bound_right
+        this.matter.add.rectangle(this.cameras.main.width, this.cameras.main.centerY, 1, this.cameras.main.height, {
             isSensor: false,
             isStatic: true
         });
@@ -251,13 +251,13 @@ export class MainServerScene extends Phaser.Scene {
             // if player is colliding with something or not moving
             if ((!input.isMovingForward && !input.isMovingBackwards)) {
                 if (player_physics.speed > 0) {
-                    if (player_physics.speed - player_physics.speed * acceleration > 0)
+                    if (player_physics.speed - player_physics.speed * acceleration > 0.01)
                         player_physics.speed -= player_physics.speed * acceleration;
                     else
                         player_physics.speed = 0;
                 }
                 else if (player_physics.speed < 0) {
-                    if (player_physics.speed + player_physics.speed * -acceleration < 0)
+                    if (player_physics.speed + player_physics.speed * -acceleration < -0.01)
                         player_physics.speed += player_physics.speed * -acceleration;
                     else
                         player_physics.speed = 0;
@@ -267,25 +267,23 @@ export class MainServerScene extends Phaser.Scene {
             // handle rotation change
             var rotation = 0;
 
-            if (player_physics.speed > 0) {
+            if (player_physics.speed != 0) {
 
-                if (input.isRotatingLeft) {
-                    rotation -= rotation_speed;
+                if (input.isRotatingRight && player_physics.rotation_speed < player_physics.max_rotation_speed) {
+                    player_physics.rotation_speed++;
                 }
-                else if (input.isRotatingRight) {
-                    rotation += rotation_speed;
+                else if (input.isRotatingLeft && player_physics.rotation_speed > -player_physics.max_rotation_speed) {
+                    player_physics.rotation_speed--;
+                }
+                else {
+                    if (player_physics.rotation_speed > 0)
+                        player_physics.rotation_speed -= 0.4;
+                    else if (player_physics.rotation_speed < 0)
+                        player_physics.rotation_speed += 0.4;
                 }
             }
 
-            if (player_physics.speed < 0) {
-
-                if (input.isRotatingLeft) {
-                    rotation -= rotation_speed;
-                }
-                else if (input.isRotatingRight) {
-                    rotation += rotation_speed;
-                }
-            }
+            rotation += player_physics.rotation_speed / 100;
             
             //if we have enough power, allow movement
             /* if (player_physics.speed > staticFriction) { */
