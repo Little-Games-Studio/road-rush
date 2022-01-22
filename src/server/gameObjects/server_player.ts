@@ -1,4 +1,3 @@
-import { throws } from 'assert';
 import * as Phaser from 'phaser';
 
 import { shape } from '../../utils/player_utils';
