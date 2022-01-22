@@ -1,6 +1,15 @@
+const left = 0;
+
 export const shape: Phaser.Types.Math.Vector2Like[] = [
-    { x: 0, y: 0 }, // oben links
-    { x: 50, y: 0 }, // oben rechts
-    { x: 50, y: 100 }, // unten rechts
-    { x: 0, y: 100 } // unten links
+    { x: 5, y: 10 },
+    { x: 6, y: 5 },
+    { x: 8, y: 0 },
+    { x: 50, y: 0 },
+    { x: 52, y: 5 },
+    { x: 52, y: 92 },
+    { x: 50, y: 94 },
+    { x: 48, y: 96 },
+    { x: 8, y: 96 },
+    { x: 6, y: 94 },
+    { x: 5, y: 92 },
 ];

@@ -20,6 +20,8 @@ export class Player extends Phaser.Physics.Matter.Sprite {
             vertices: shape
         });
 
+        this.setOrigin(this.centerOfMass.x + 0.02, this.centerOfMass.y - 0.02)
+
         this.id = playerInfo.id;
         this.session = playerInfo.session;
         
