@@ -9,7 +9,6 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class CreateSessionScene extends Phaser.Scene {
 
-    private onePlayerButton: any;
     private twoPlayersButton: any;
     private threePlayersButton: any;
     private fourPlayersButton: any;
@@ -54,28 +53,18 @@ export class CreateSessionScene extends Phaser.Scene {
         this.add.text(screenCenterX, menuTopPosition, 'Create Session', { font: '48px Calibri' }).setOrigin(0.5);
 
         this.add.text(screenCenterX, playersTitlePosition, 'Players', { font: '24px Calibri' }).setOrigin(0.5);
-
-        this.onePlayerButton = this.add.text(screenCenterX - 150, playersButtonsPosition, "1", buttonStyle).setOrigin(0.5);
-        this.onePlayerButton.setInteractive();
-
-        if (!this.gameManager.amount_of_players || this.gameManager.amount_of_players == 1)
-            this.onePlayerButton.setBackgroundColor('#fff');
-
-        this.onePlayerButton.on('pointerup', () => {
-            this.handlePlayerButtonClick(1);
-        });
         
-        this.twoPlayersButton = this.add.text(screenCenterX - 75, playersButtonsPosition, "2", buttonStyle).setOrigin(0.5);
+        this.twoPlayersButton = this.add.text(screenCenterX - 90, playersButtonsPosition, "2", buttonStyle).setOrigin(0.5);
         this.twoPlayersButton.setInteractive();
 
-        if (this.gameManager.amount_of_players == 2)
+        if (this.gameManager.amount_of_players < 3)
             this.twoPlayersButton.setBackgroundColor('#fff');
 
         this.twoPlayersButton.on('pointerup', () => {
             this.handlePlayerButtonClick(2);
         });
 
-        this.threePlayersButton = this.add.text(screenCenterX, playersButtonsPosition, "3", buttonStyle).setOrigin(0.5);
+        this.threePlayersButton = this.add.text(screenCenterX - 30, playersButtonsPosition, "3", buttonStyle).setOrigin(0.5);
         this.threePlayersButton.setInteractive();
 
         if (this.gameManager.amount_of_players == 3)
@@ -85,7 +74,7 @@ export class CreateSessionScene extends Phaser.Scene {
             this.handlePlayerButtonClick(3);
         });
 
-        this.fourPlayersButton = this.add.text(screenCenterX + 75, playersButtonsPosition, "4", buttonStyle).setOrigin(0.5);
+        this.fourPlayersButton = this.add.text(screenCenterX + 30, playersButtonsPosition, "4", buttonStyle).setOrigin(0.5);
         this.fourPlayersButton.setInteractive();
 
         if (this.gameManager.amount_of_players == 4)
@@ -95,7 +84,7 @@ export class CreateSessionScene extends Phaser.Scene {
             this.handlePlayerButtonClick(4);
         });
 
-        this.fivePlayersButton = this.add.text(screenCenterX + 150, playersButtonsPosition, "5", buttonStyle).setOrigin(0.5);
+        this.fivePlayersButton = this.add.text(screenCenterX + 90, playersButtonsPosition, "5", buttonStyle).setOrigin(0.5);
         this.fivePlayersButton.setInteractive();
 
         if (this.gameManager.amount_of_players == 5)
@@ -123,13 +112,6 @@ export class CreateSessionScene extends Phaser.Scene {
     handlePlayerButtonClick(players: integer) {
 
         this.gameManager.amount_of_players = players;
-
-        if (players == 1) {
-            this.onePlayerButton.setBackgroundColor('#fff');
-        }
-        else {
-            this.onePlayerButton.setBackgroundColor('#797D81');
-        }
 
         if (players == 2) {
             this.twoPlayersButton.setBackgroundColor('#fff');
