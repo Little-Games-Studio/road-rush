@@ -7,6 +7,7 @@ export class Player extends Phaser.Physics.Matter.Sprite {
     public id: string;
     public session: string;
     public health: number = 100;
+    public playerInfo: PlayerInfo;
     public speed: number = 0;
     public rotation_speed = 0;
     public max_rotation_speed = 10;
@@ -24,6 +25,7 @@ export class Player extends Phaser.Physics.Matter.Sprite {
 
         this.id = playerInfo.id;
         this.session = playerInfo.session;
+        this.playerInfo = playerInfo;
         
         this.setOnCollide((data: Phaser.Types.Physics.Matter.MatterCollisionData) => {
 
@@ -82,8 +84,10 @@ export class Player extends Phaser.Physics.Matter.Sprite {
 
                 if (this.health - health_to_substract > 0)
                     this.health = this.health - health_to_substract;
-                else
+                else {
                     this.health = 0;
+                    this.scene.events.emit('player_out_of_health', this);
+                }
 
                 if (collided_with_world_bounds) {
                     if (this.speed > 0)

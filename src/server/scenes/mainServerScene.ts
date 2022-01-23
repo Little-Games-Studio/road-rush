@@ -224,6 +224,22 @@ export class MainServerScene extends Phaser.Scene {
                 players[socket.id].input = inputData;
             });
         });
+
+        this.events.on('player_out_of_health', (player: Player) => {
+
+            var player_alive = []
+            // check if there is only one player left that is alive and the winner
+            this.player_game_objects.forEach((player_physics: Player) => {
+                if (player_physics.health > 0) {
+                    player_alive.push(player_physics)
+                }
+            })
+            
+            if (player_alive.length == 1) {
+                // we have a winner
+                console.log('Winner:', player_alive[0].playerInfo.username)
+            }
+        });
     }
 
     update(time, delta) {
