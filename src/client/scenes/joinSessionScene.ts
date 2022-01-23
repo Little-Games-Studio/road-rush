@@ -30,10 +30,24 @@ export class JoinSessionScene extends Phaser.Scene {
 
         this.add.text(screenCenterX, menuTopPosition, 'Join Session', { font: '48px Calibri' }).setOrigin(0.5);
 
+        this.joinButton = this.add.text(screenCenterX, screenCenterY + 25, "JOIN",
+            {
+                font: '28px Calibri',
+                color: '#797D81',
+            }).setOrigin(0.5);
+
+        if (localStorage.getItem('session').length > 0) {
+            this.activateJoinButton()
+        }
+
+        this.joinButton.once('pointerup', () => {
+            this.handleJoinClick();
+        });
+
         // https://rexrainbow.github.io/phaser3-rex-notes/docs/site/inputtext/#style
         this.inputText = new InputText(this, screenCenterX, menuTopPosition + 65, 400, 50, { // x, y, width, height
             type: 'text',
-            text: localStorage.getItem('session'),
+            text: process.env.ENV == 'development' ? localStorage.getItem('session'): '',
             fontSize: '28px',
             placeholder: 'Enter session ID',
             align: 'center',
@@ -58,19 +72,7 @@ export class JoinSessionScene extends Phaser.Scene {
 
         this.add.existing(this.inputText);
 
-        this.joinButton = this.add.text(screenCenterX, screenCenterY + 25, "JOIN",
-            {
-                font: '28px Calibri',
-                color: '#797D81',
-            }).setOrigin(0.5);
-        
-        if (localStorage.getItem('session').length > 0) {
-            this.activateJoinButton()
-        }
-
-        this.joinButton.once('pointerup', () => {
-            this.handleJoinClick();
-        });
+        this.inputText.setFocus();
 
         this.backButton = this.add.text(screenCenterX, screenCenterY + 75, "BACK",
             {

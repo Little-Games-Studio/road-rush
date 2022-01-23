@@ -38,7 +38,7 @@ export class MainMenuScene extends Phaser.Scene {
             type: 'text',
             text: this.gameManager.getUsername(),
             fontSize: '28px',
-            maxLength: 10,
+            maxLength: 15,
             minLength: 3,
             placeholder: 'Enter your name',
             align: 'center',
