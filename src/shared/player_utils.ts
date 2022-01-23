@@ -13,3 +13,16 @@ export const shape: Phaser.Types.Math.Vector2Like[] = [
     { x: 6, y: 94 },
     { x: 5, y: 92 },
 ];
+
+export interface PlayerInfo {
+    id: string,
+    session: string,
+    username: string,
+    health: number,
+    color: number,
+    position: {
+        x: number,
+        y: number
+    },
+    hud_text_y_position: number
+}

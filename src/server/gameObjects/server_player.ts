@@ -1,10 +1,10 @@
 import * as Phaser from 'phaser';
 
-import { shape } from '../../utils/player_utils';
+import { shape, PlayerInfo } from '../../shared/player_utils';
 
 export class Player extends Phaser.Physics.Matter.Sprite {
 
-    public id: integer;
+    public id: string;
     public session: string;
     public health: number = 100;
     public speed: number = 0;
@@ -12,7 +12,7 @@ export class Player extends Phaser.Physics.Matter.Sprite {
     public max_rotation_speed = 10;
     public is_colliding: boolean = false;
 
-    constructor(scene: Phaser.Scene, playerInfo: any, collision_group: number) {
+    constructor(scene: Phaser.Scene, playerInfo: PlayerInfo, collision_group: number) {
 
         super(scene.matter.world, playerInfo.position.x, playerInfo.position.y, 'race_car', 0, {
             label: 'player',
