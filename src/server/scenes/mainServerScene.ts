@@ -237,7 +237,9 @@ export class MainServerScene extends Phaser.Scene {
             
             if (player_alive.length == 1) {
                 // we have a winner
-                console.log('Winner:', player_alive[0].playerInfo.username)
+                console.log('Session:', player.playerInfo.session, ' - Winner:', player_alive[0].playerInfo.username)
+                // @ts-ignore
+                io.in('session-' + player.playerInfo.session).emit('winner', 'player ' + player_alive[0].playerInfo);
             }
         });
     }

@@ -33,6 +33,7 @@ var config = {
         CreateSessionScene,
         JoinSessionScene,
         GameScene,
+        GameOverScene,
         LeaveSessionScene
     ],
     plugins: {
