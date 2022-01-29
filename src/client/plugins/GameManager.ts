@@ -1,18 +1,24 @@
 import * as Phaser from 'phaser';
 
 import { io } from "socket.io-client";
+import { PlayerInfo } from '../../shared/player_utils';
+import { Player } from '../gameObjects/local_player';
 
 export class GameManager extends Phaser.Plugins.BasePlugin {
 
     public socket: any;
     public session: any;
     public amount_of_players: integer = 2;
-    public players: any;
+    public player: Player;
+    public playerInfos: [PlayerInfo];
+    public eventEmitter: Phaser.Events.EventEmitter;
 
     private username: string = '';
 
     constructor(pluginManager) {
         super(pluginManager);
+
+        this.eventEmitter = new Phaser.Events.EventEmitter();
     }
 
     start() {
@@ -33,9 +39,12 @@ export class GameManager extends Phaser.Plugins.BasePlugin {
                 console.error('ERROR: could not join session');
             });
 
-            this.socket.on('currentPlayers', (players) => {
-                this.players = players;
-                console.log("gameManager - current players:", this.players);
+            this.socket.on('currentPlayers', (playerInfos: [PlayerInfo]) => {
+
+                this.playerInfos = playerInfos;
+                console.log("gameManager - current player infos:", this.playerInfos);
+
+                this.eventEmitter.emit('player_info_update');
             }); 
         });
     }

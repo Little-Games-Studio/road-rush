@@ -6,6 +6,8 @@ import * as road from './../../assets/images/background/road.png'
 import * as race_car from './../../assets/images/race_car.png'
 
 import { Player } from '../gameObjects/local_player';
+import { PlayerInfo } from '../../shared/player_utils';
+import { GameManager } from '../plugins/GameManager';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
@@ -25,9 +27,9 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class GameScene extends Phaser.Scene {
 
-    public player: Player;
+    //public player: Player;
 
-    private gameManager: any;
+    private gameManager: GameManager;
     private players: any[];
 
     public road: Phaser.GameObjects.TileSprite;
@@ -58,7 +60,7 @@ export class GameScene extends Phaser.Scene {
 
     create(): void {
 
-        this.gameManager = this.plugins.get('GameManager');
+        this.gameManager = this.plugins.get('GameManager') as GameManager;
 
         // KEYS
         this.keyW = this.input.keyboard.addKey('W');
@@ -87,13 +89,11 @@ export class GameScene extends Phaser.Scene {
 
         this.add.existing(inputText);
 
-        Object.keys(this.gameManager.players).forEach((id) => {
-            this.displayPlayer(this.gameManager.players[id]);
+        Object.keys(this.gameManager.playerInfos).forEach((id) => {
+            this.displayPlayer(this.gameManager.playerInfos[id]);
         });
 
-        this.gameManager.socket.on('currentPlayers', (players_sent_from_server) => {
-
-            console.log('gameScene - currentPlayers')
+        this.gameManager.eventEmitter.on('player_info_update', () => {
 
             this.players.forEach((player) => {
                 player.destroy();
@@ -101,8 +101,8 @@ export class GameScene extends Phaser.Scene {
 
             this.players = [];
 
-            Object.keys(players_sent_from_server).forEach((id) => {
-                this.displayPlayer(players_sent_from_server[id]);
+            Object.keys(this.gameManager.playerInfos).forEach((id) => {
+                this.displayPlayer(this.gameManager.playerInfos[id]);
             });
         });
 
@@ -116,6 +116,12 @@ export class GameScene extends Phaser.Scene {
                     }
                 });
             });
+        });
+
+        this.gameManager.socket.on('winner', (playerInfo: PlayerInfo) => {
+
+            console.log('winner', playerInfo)
+            this.scene.launch('GameOverScene');
         });
 
         //this.music = this.sound.add('music');
