@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { GameManager } from '../plugins/GameManager';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
@@ -8,7 +9,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 export class GameOverScene extends Phaser.Scene {
 
-    private gameManager: any;
+    private gameManager: GameManager;
     private restartButton: any;
     private backButton: any;
 
@@ -29,23 +30,17 @@ export class GameOverScene extends Phaser.Scene {
         this.restartButton = this.add.text(screenCenterX, menuTopPosition + 65, 'RESTART', { font: '28px Arial' }).setOrigin(0.5);
         this.restartButton.setInteractive();
         
-        /* this.restartButton.once('pointerup', () => {
+        this.restartButton.once('pointerup', () => {
 
-            this.gameManager.socket.emit('restart', {
-                isRotatingLeft: this.isRotatingLeft,
-                isRotatingRight: this.isRotatingRight,
-                isMovingForward: this.isMovingForward,
-                isMovingBackwards: this.isMovingBackwards
-            });
-
+            this.gameManager.restart();
             this.scene.setVisible(false);
-        }); */
+        });
 
-        this.backButton = this.add.text(screenCenterX, menuTopPosition + 130, 'LEAVE SESSION', { font: '28px Arial' }).setOrigin(0.5);
+        /* this.backButton = this.add.text(screenCenterX, menuTopPosition + 130, 'LEAVE SESSION', { font: '28px Arial' }).setOrigin(0.5);
         this.backButton.setInteractive();
 
         this.backButton.once('pointerup', () => {
-            this.scene.get('MainMenu').scene.start();
-        });
+            this.scene.start('MainMenu');
+        }); */
     }
 }

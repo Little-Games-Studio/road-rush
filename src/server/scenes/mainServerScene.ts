@@ -31,7 +31,6 @@ const colors = [
 ];
 
 const acceleration = 0.1;
-const staticFriction = 1;
 
 export class MainServerScene extends Phaser.Scene {
 
@@ -223,6 +222,16 @@ export class MainServerScene extends Phaser.Scene {
             socket.on('playerInput', (inputData) => {
                 players[socket.id].input = inputData;
             });
+
+            socket.on('restart', () => {
+
+                console.log('restart player', players[socket.id])
+
+                players[socket.id].health = 100;
+                players[socket.id].position = { ...players[socket.id].initial_position };
+                players[socket.id].is_restarting = true;
+
+            });
         });
 
         this.events.on('player_out_of_health', (player: Player) => {
@@ -248,76 +257,91 @@ export class MainServerScene extends Phaser.Scene {
 
         this.player_game_objects.forEach((player_physics: Player) => {
 
-            // handle speed change
             const input = players[player_physics.id].input;
 
-            if (player_physics.health > 0) {
+            // only calculate changes, when the player is not getting restarted
+            if (!players[player_physics.id].is_restarting) {
 
-                if (input.isMovingForward) {
-                    if (player_physics.speed < players[player_physics.id].max_speed) {
-                        player_physics.speed += acceleration;
+                // if the player is out of health, 
+                // it can no longer increase or lower its speed
+                if (player_physics.health > 0) {
+
+                    if (input.isMovingForward) {
+                        if (player_physics.speed < players[player_physics.id].max_speed) {
+                            player_physics.speed += acceleration;
+                        }
+                    }
+
+                    if (input.isMovingBackwards) {
+                        if (player_physics.speed > -players[player_physics.id].max_speed) {
+                            player_physics.speed -= acceleration;
+                        }
                     }
                 }
 
-                if (input.isMovingBackwards) {
-                    if (player_physics.speed > -players[player_physics.id].max_speed) {
-                        player_physics.speed -= acceleration;
+                // if the player is not increasing or decreasing its speed,
+                // so its current speed needs to be brought to 0 over time, even when the player is out of health, 
+                // so that it does not stop immediately, what would look unnatural
+                if ((!input.isMovingForward && !input.isMovingBackwards)) {
+                    if (player_physics.speed > 0) {
+                        if (player_physics.speed - player_physics.speed * acceleration > 0.01)
+                            player_physics.speed -= player_physics.speed * acceleration;
+                        else
+                            player_physics.speed = 0;
+                    }
+                    else if (player_physics.speed < 0) {
+                        if (player_physics.speed + player_physics.speed * -acceleration < -0.01)
+                            player_physics.speed += player_physics.speed * -acceleration;
+                        else
+                            player_physics.speed = 0;
                     }
                 }
-            }
 
-            // if player is colliding with something or not moving
-            if ((!input.isMovingForward && !input.isMovingBackwards)) {
-                if (player_physics.speed > 0) {
-                    if (player_physics.speed - player_physics.speed * acceleration > 0.01)
-                        player_physics.speed -= player_physics.speed * acceleration;
-                    else
-                        player_physics.speed = 0;
+                // handle rotation change
+                var rotation = 0;
+
+                if (player_physics.speed != 0) {
+
+                    if (input.isRotatingRight && player_physics.rotation_speed < player_physics.max_rotation_speed) {
+                        player_physics.rotation_speed++;
+                    }
+                    else if (input.isRotatingLeft && player_physics.rotation_speed > -player_physics.max_rotation_speed) {
+                        player_physics.rotation_speed--;
+                    }
+                    else {
+                        if (player_physics.rotation_speed > 0)
+                            player_physics.rotation_speed -= 0.4;
+                        else if (player_physics.rotation_speed < 0)
+                            player_physics.rotation_speed += 0.4;
+                    }
                 }
-                else if (player_physics.speed < 0) {
-                    if (player_physics.speed + player_physics.speed * -acceleration < -0.01)
-                        player_physics.speed += player_physics.speed * -acceleration;
-                    else
-                        player_physics.speed = 0;
-                }
-            }
 
-            // handle rotation change
-            var rotation = 0;
-
-            if (player_physics.speed != 0) {
-
-                if (input.isRotatingRight && player_physics.rotation_speed < player_physics.max_rotation_speed) {
-                    player_physics.rotation_speed++;
-                }
-                else if (input.isRotatingLeft && player_physics.rotation_speed > -player_physics.max_rotation_speed) {
-                    player_physics.rotation_speed--;
-                }
-                else {
-                    if (player_physics.rotation_speed > 0)
-                        player_physics.rotation_speed -= 0.4;
-                    else if (player_physics.rotation_speed < 0)
-                        player_physics.rotation_speed += 0.4;
-                }
-            }
-
-            rotation += player_physics.rotation_speed / 100;
-            
-            //if we have enough power, allow movement
-            /* if (player_physics.speed > staticFriction) { */
-                player_physics.setAngularVelocity(rotation * player_physics.speed/10);
-
+                rotation += player_physics.rotation_speed / 100;
+                
+                player_physics.setAngularVelocity(rotation * player_physics.speed / 10);
                 player_physics.setVelocityX(Math.sin(player_physics.rotation) * player_physics.speed);
                 player_physics.setVelocityY(-Math.cos(player_physics.rotation) * player_physics.speed);
-            /* } */
 
-            players[player_physics.id].position.x = player_physics.x;
-            players[player_physics.id].position.y = player_physics.y;
-            players[player_physics.id].rotation = player_physics.rotation;
-            players[player_physics.id].angle = player_physics.angle;
-            players[player_physics.id].health = player_physics.health;
+                players[player_physics.id].position.x = player_physics.x;
+                players[player_physics.id].position.y = player_physics.y;
+                players[player_physics.id].position.angle = player_physics.angle;
+                players[player_physics.id].health = player_physics.health;
+            }
+            else {
+                console.log("restart")
+                player_physics.speed = 0;
+                player_physics.health = 100;
+                player_physics.angle = players[player_physics.id].position.angle;
+                player_physics.x = players[player_physics.id].position.x;
+                player_physics.y = players[player_physics.id].position.y;
 
-            //this.physics.world.wrap(this.players_physics_group, 5);
+                player_physics.setAngularVelocity(0);
+                player_physics.setVelocityX(0);
+                player_physics.setVelocityY(0);
+
+                players[player_physics.id].is_restarting = false;
+            }
+
             // @ts-ignore
             io.emit('playerUpdates', sessions[players[player_physics.id].session].players);
         });
@@ -328,7 +352,8 @@ export class MainServerScene extends Phaser.Scene {
         socket.join('session-' + session);
 
         players[socket.id].session = session;
-        players[socket.id].position = sessions[session].positions.shift();
+        players[socket.id].initial_position = sessions[session].positions.shift();
+        players[socket.id].position = { ...players[socket.id].initial_position };
         players[socket.id].color = sessions[session].colors.shift();
 
         sessions[session].players.push(players[socket.id]);

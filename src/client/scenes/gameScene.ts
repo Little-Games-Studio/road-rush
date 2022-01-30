@@ -111,7 +111,7 @@ export class GameScene extends Phaser.Scene {
                 this.players.forEach((player: Player) => {
                     if (players[id].id === player.id) {
                         player.setPosition(players[id].position.x, players[id].position.y);
-                        player.setAngle(players[id].angle);
+                        player.setAngle(players[id].position.angle);
                         player.health = players[id].health;
                     }
                 });

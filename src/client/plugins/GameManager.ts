@@ -61,4 +61,8 @@ export class GameManager extends Phaser.Plugins.BasePlugin {
         this.username = username;
         localStorage.setItem('username', this.username);
     }
+
+    restart() {
+        this.socket.emit("restart");
+    }
 }
