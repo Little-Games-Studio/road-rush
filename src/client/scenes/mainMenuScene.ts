@@ -90,6 +90,20 @@ export class MainMenuScene extends Phaser.Scene {
         });
 
         this.inputText.setFocus();
+
+        if (process.env.ENV == 'development') {
+
+            this.add.text(screenCenterX, screenCenterY + 125, "CLEAR LOCAL STORAGE",
+                {
+                    font: '28px Calibri',
+                    color: '#fff',
+                })
+                .setOrigin(0.5)
+                .once('pointerup', () => {
+                    localStorage.clear()
+                })
+                .setInteractive();
+        }
     }
 
     activateButtons() {
